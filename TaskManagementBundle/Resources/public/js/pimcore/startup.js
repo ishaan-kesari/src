@@ -142,6 +142,7 @@ if (perspectiveCfg.inToolbar("extras")) {
                         });
                     }
                 },
+                
                 items: [ {
                     xtype:'fieldset',
                     autoHeight:true,
@@ -309,18 +310,78 @@ this.panel.add(layout);
             
             {
                 xtype: 'actioncolumn',
+                menuText: t('Edit'),
+                dataIndex: 'id',
+                width: 30,
+                items: [{
+                    tooltip: t('Edit'),
+                    dataIndex: 'id',
+                    icon: "/pimcore/static6/img/flat-color-icons/edit.svg",
+                    handler: function (grid, rowIndex) {
+                        var rec = grid.getStore().getAt(rowIndex);
+                        Ext.Ajax.request({
+                            url: '../current_task_detail',
+                            params: {
+                                "id" :rec.getId()
+                            },
+                            method: 'GET',  
+                            success: function(response, opts) {
+                                var obj = Ext.decode(response.responseText);
+                                if(obj['success'][0]) {
+                                    var taskDetail = obj['success'][0];
+                                    AddEditTaskForm('Edit',taskDetail);
+                                }
+                                
+                            },
+
+                            failure: function(response, opts) {
+                                console.log('server-side failure with status code ' + response.status);
+                            }
+                        });
+                    }.bind(this)
+                }]
+            },
+            {
+                xtype: 'actioncolumn',
                 menuText: t('delete'),
+                text: t("Delete"),
                 width: 30,
                 items: [{
                     tooltip: t('delete'),
                     icon: "/pimcore/static6/img/flat-color-icons/delete.svg",
                     handler: function (grid, rowIndex) {
-                        grid.getStore().removeAt(rowIndex);
+                        var rec = grid.getStore().getAt(rowIndex);
+                        Ext.Ajax.request({
+                            url: '../delete_task',
+                            params: {
+                                "id" : rec.getId()
+                            },
+                            method: 'GET',  
+                            success: function(response, opts) {
+                                grid.getStore().removeAt(rowIndex);
+                            },
+
+                            failure: function(response, opts) {
+                                console.log('server-side failure with status code ' + response.status);
+                            }
+                        })
                     }.bind(this)
                 }]
             }
         ];
         
+        function tConvert (time) {
+            // Check correct time format and split into components
+            time = time.toString ().match (/^([01]\d|2[0-3])(:)([0-5]\d)(:[0-5]\d)?$/) || [time];
+            time= time.slice(0,time.length-1);
+
+            if (time.length > 1) { // If time format correct
+              time = time.slice (1);  // Remove full string match value
+              time[5] = +time[0] < 12 ? 'AM' : 'PM'; // Set AM/PM
+              time[0] = +time[0] % 12 || 12; // Adjust hours
+            }
+            return time.join (''); // return adjusted time or original string
+}
        
         function AddEditTaskForm(Use,taskDetail) {
             if(Use == 'Add') {
@@ -342,14 +403,18 @@ this.panel.add(layout);
                 var panelTitle = "Edit Task";
                 var url = 'update_task';
                 var msg = 'Updated';
-                var description        = taskDetail['description'];
-                var due_date           = taskDetail['due_date'];
-                var priority           = taskDetail['priority'];
-                var status             = taskDetail['status'];
-                var start_date         = taskDetail['start_date'];
-                var completion_date    = taskDetail['completion_date'];
-                var associated_element = taskDetail['associated_element'];
-                var subject            = taskDetail['subject'];
+                var description             = taskDetail['description'];
+                
+                var due_date                = taskDetail['due_date'].split(" ")[0];
+                var due_date_time           = tConvert(taskDetail['due_date'].split(" ")[1]);
+                var priority                = taskDetail['priority'];
+                var status                  = taskDetail['status'];
+                var start_date              = taskDetail['start_date'].split(" ")[0];
+                var start_date_time         = tConvert(taskDetail['start_date'].split(" ")[1]);
+                var completion_date         = taskDetail['completion_date'].split(" ")[0];
+                var completion_date_time    = tConvert(taskDetail['completion_date'].split(" ")[1]);
+                var associated_element      = taskDetail['associated_element'];
+                var subject                 = taskDetail['subject'];
             }    
             
             var AddTaskForm = Ext.create('Ext.form.Panel', {
@@ -369,17 +434,38 @@ this.panel.add(layout);
                         value     : description
                     },
                     {   
-                        xtype     : 'datefield',
+                        xtype: 'fieldcontainer',
+                        layout : 'hbox',
                         fieldLabel: 'Due Date',
-                        name      : 'due_date',
-                        listeners : {
-                            render : function(datefield) {
-                                if(Use == 'Edit')
-                                    datefield.setValue(new Date(due_date));
+                        items:[
+                            {
+                                xtype     : 'datefield',
+                                name      : 'due_date',
+                                width     : 120,
+                                listeners : {
+                                    render : function(datefield) {
+                                        if(Use == 'Edit')
+                                            datefield.setValue(new Date(due_date));
+                                    }
+                                },
+                            },
+                            {
+                                xtype: 'timefield',
+                                name: 'due_date_time',
+                                minValue: '12:00 AM',
+                                maxValue: '11:45 PM',
+                                increment: 15,
+                                width:100,
+                                listeners : {
+                                    render : function(datefield) {
+                                        if(Use == 'Edit')
+                                            datefield.setValue(due_date_time);
+                                    }
+                                },
                             }
-                        }
+                        ]
                     },
-                    {   
+                    {
                         xtype: 'combo',
                         fieldLabel: 'Priority',
                         name: 'priority',
@@ -408,27 +494,71 @@ this.panel.add(layout);
                         valueField: 'abbr',
                         value:status
                     },
-                    {
-                        xtype: 'datefield',
+                    {   
+                        xtype: 'fieldcontainer',
+                        layout : 'hbox',
                         fieldLabel: 'Start Date',
-                        name: 'start_date',
-                        listeners : {
-                            render : function(datefield) {
-                                if(Use == 'Edit')
-                                    datefield.setValue(new Date(start_date));
+                        
+                        items:[
+                            {
+                                xtype     : 'datefield',
+                                name      : 'start_date',
+                                width     : 100,
+                                listeners : {
+                                    render : function(datefield) {
+                                        if(Use == 'Edit')
+                                            datefield.setValue(new Date(start_date));
+                                    }
+                                },
+                            },
+                            {
+                                xtype: 'timefield',
+                                name: 'start_date_time',
+                                minValue: '12:00 AM',
+                                maxValue: '11:45 PM',
+                                increment: 15,
+                                width:100,
+                                listeners : {
+                                    render : function(datefield) {
+                                        if(Use == 'Edit')
+                                            datefield.setValue(start_date_time);
+                                    }
+                                },
                             }
-                        }    
+                        ]
                     },
-                    {
-                        xtype: 'datefield',
+                     {   
+                        xtype: 'fieldcontainer',
+                        layout : 'hbox',
                         fieldLabel: 'Completion Date',
-                        name: 'completion_date',
-                        listeners : {
-                            render : function(datefield) {
-                                if(Use == 'Edit')
-                                    datefield.setValue(new Date(completion_date));
+                        
+                        items:[
+                            {
+                                xtype     : 'datefield',
+                                name      : 'completion_date',
+                                width     : 100,
+                                listeners : {
+                                    render : function(datefield) {
+                                        if(Use == 'Edit')
+                                            datefield.setValue(new Date(completion_date));
+                                    }
+                                },
+                            },
+                            {
+                                xtype: 'timefield',
+                                name: 'completion_date_time',
+                                minValue: '12:00 AM',
+                                maxValue: '11:45 PM',
+                                increment: 15,
+                                width:100,
+                                listeners : {
+                                    render : function(datefield) {
+                                        if(Use == 'Edit')
+                                            datefield.setValue(completion_date_time);
+                                    }
+                                },
                             }
-                        }
+                        ]
                     },
                     {   xtype: 'combo',
                         fieldLabel: 'Associated Element',
@@ -444,7 +574,6 @@ this.panel.add(layout);
                         valueField: 'abbr',
                         value:associated_element
                     },
-
                     {   
                         xtype: 'textfield',
                         fieldLabel: 'Subject',
@@ -463,7 +592,7 @@ this.panel.add(layout);
                 items  : [AddTaskForm],
                 buttons: [
                     {   text: 'Save',
-                        handler : function(btn) {
+                        handler : function(grid,rowIndex) {
                             var form = AddTaskForm.getForm();
                             form.submit({
                                 method  : 'POST',
@@ -475,6 +604,8 @@ this.panel.add(layout);
                                     Ext.Msg.alert('Thank You', 'Your Task is '+msg, function() {
                                         AddTaskForm.reset();
                                         win.close();
+                                        //if(Use == 'Edit')
+                                           //grid.getStore().removeAt(rowIndex);
                                     });
                                 }
                             });
@@ -503,38 +634,7 @@ this.panel.add(layout);
                     iconCls: "pimcore_icon_delete",
                     id: "pimcore_button_delete",
                     disabled: true
-                }, "-",{
-                    text: t('Edit'),
-                    handler: function() {
-                        var id = "121";
-                        /* store = new Ext.data.JsonStore({
-                            url: '../edit_task',
-                        });
-                        store.load(); */
-                        Ext.Ajax.request({
-                            url: '../edit_task',
-                            params: {
-                                "id" : id
-                            },
-                            method: 'GET',  
-                            success: function(response, opts) {
-                                var obj = Ext.decode(response.responseText);
-                                var taskDetail = obj['success'][0];
-                                AddEditTaskForm('Edit',taskDetail);
-                            },
-
-                            failure: function(response, opts) {
-                                console.log('server-side failure with status code ' + response.status);
-                            }
-                        });
-                   
-                        
-                        
-                    }, 
-                    iconCls: "pimcore_icon_delete",
-                    id: "pimcore_button_delete",
-                    disabled: false
-                },
+                }, 
                 {
                     text: t('Archive'),
                     handler: "",//this.onFlush.bind(this),
@@ -578,6 +678,8 @@ this.panel.add(layout);
                 }.bind(this)            
         }
     });
+        
+    
     this.pagingtoolbar = new Ext.PagingToolbar({
             pageSize: 10,
             store: this.store,
@@ -612,6 +714,7 @@ this.panel.add(layout);
                 }.bind(this)
             }
         }));
+        
         this.grid = new Ext.grid.GridPanel({
             frame: false,
             autoScroll: true,

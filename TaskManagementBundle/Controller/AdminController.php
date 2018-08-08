@@ -33,13 +33,13 @@ class AdminController extends FrontendController
      * @Route("/save_task")
      */
     public function SaveTask(Request $request)
-    {
+    { 
         $Description =$_POST['description'];
-        $DueDate = date('Y-m-d H:i:s', strtotime($_POST['due_date']));
+        $DueDate = date('Y-m-d H:i:s', strtotime($_POST['due_date']." ".$_POST['due_date_time']));
         $Priority =  $_POST['priority'];
         $Status = $_POST['status']; 
-        $StartDate = date('Y-m-d H:i:s', strtotime($_POST['start_date']));
-        $CompletionDate =  date('Y-m-d H:i:s', strtotime($_POST['completion_date']));
+        $StartDate = date('Y-m-d H:i:s', strtotime($_POST['start_date']." ".$_POST['start_date_time']));
+        $CompletionDate =  date('Y-m-d H:i:s', strtotime($_POST['completion_date']." ".$_POST['completion_date_time']));
         $AssociatedElement =  $_POST['associated_element'];
         $Subject = $_POST['subject'];
      
@@ -55,7 +55,6 @@ class AdminController extends FrontendController
         $TaskManagmentObj->save();
         die;
         
-       
     }
     
    /**
@@ -69,12 +68,10 @@ class AdminController extends FrontendController
         $TaskListingObj = new \TaskManagementBundle\Model\TaskManagement\Listing();
         $TaskListingObj->setOffset($start);
         $TaskListingObj->setLimit($limit);
-        //$TaskListingObj->setCondition('column = 1 AND column2 = 2');
         $totalCount = $TaskListingObj->count();
         $TaskListingData = $TaskListingObj->load(); 
        
-    
-          $response =  \GuzzleHttp\json_encode(["success" => true,
+        $response =  \GuzzleHttp\json_encode(["success" => true,
             'data' => $TaskListingData,
             'total' => $totalCount]);
 
@@ -93,18 +90,26 @@ class AdminController extends FrontendController
     public function UpdateTask() {
         $id= $_POST['id'];
         $Description =$_POST['description'];
-        $DueDate = date('Y-m-d H:i:s', strtotime($_POST['due_date']));
+        $DueDate = date('Y-m-d H:i:s', strtotime($_POST['due_date']." ".$_POST['due_date_time']));
         $Priority =  $_POST['priority'];
         $Status = $_POST['status']; 
-        $StartDate = date('Y-m-d H:i:s', strtotime($_POST['start_date']));
-        $CompletionDate =  date('Y-m-d H:i:s', strtotime($_POST['completion_date']));
+        $StartDate = date('Y-m-d H:i:s', strtotime($_POST['start_date']." ".$_POST["due_date_time"]));
+        $CompletionDate =  date('Y-m-d H:i:s', strtotime($_POST['completion_date']." ".$_POST["completion_date_time"]));
         $AssociatedElement =  $_POST['associated_element'];
         $Subject = $_POST['subject'];
         
         
-        
-        
-        //$TaskManagmentObj = new Model\TaskManagement();
+        $TaskManagmentObj = new Model\TaskManagement();
+        $TaskManagmentObj->setId($id);
+        $TaskManagmentObj->setDescription($Description);
+        $TaskManagmentObj->setDue_date($DueDate);
+        $TaskManagmentObj->setPriority($Priority);
+        $TaskManagmentObj->setStatus($Status);
+        $TaskManagmentObj->setStart_date($StartDate);
+        $TaskManagmentObj->setCompletion_date($CompletionDate);
+        $TaskManagmentObj->setAssociated_element($AssociatedElement);
+        $TaskManagmentObj->setSubject($Subject);
+        $TaskManagmentObj->save();
         die;
     }
     
@@ -112,21 +117,39 @@ class AdminController extends FrontendController
     /**
      * Task Detail for specific id
      * 
-     * @Route("/edit_task")
+     * @Route("/current_task_detail")
      * @return array task detail
      * 
     */
-    public function EditTask() {
+    public function CurrentTaskDetail() {
         $id= $_GET['id'];
         $TaskListingObj = new \TaskManagementBundle\Model\TaskManagement\Listing();
         $TaskListingObj->setCondition("id = ?", $id)->setLimit(1);
         $TaskDetail = $TaskListingObj->load(); 
-       
+        
+        //$TaskDetail
         $response = \GuzzleHttp\json_encode([
             'success'=>$TaskDetail
         ]);
         
         return new Response($response);
+        die;
+    }
+    
+    /**
+     * Task Detail for specific id
+     * 
+     * @Route("/delete_task")
+     * @return array task detail
+     * 
+    */
+    public function DeleteTask() {
+        echo $id= $_GET['id'];
+        
+        $TaskManagmentObj = new Model\TaskManagement();
+        $TaskManagmentObj->setId($id);
+        $TaskManagmentObj->delete();
+        
         die;
     }
     
