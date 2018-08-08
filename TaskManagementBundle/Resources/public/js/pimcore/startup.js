@@ -13,7 +13,6 @@ pimcore.plugin.TaskManagementBundle = Class.create(pimcore.plugin.admin, {
 
         Ext.apply(this.config, config);
         this.searchParams = this.config.searchParams;
-        //pimcore.layout.refresh();
         pimcore.plugin.broker.registerPlugin(this);
     },
 
@@ -196,7 +195,8 @@ if (perspectiveCfg.inToolbar("extras")) {
                             valueField: 'key'
                         }]
                 }]});
-       TaskManagementBundlePlugin.panel = new Ext.Panel({
+        if (!this.panel) {
+       this.panel = new Ext.Panel({
             id:         "task_manager_panel",
             title:      "Task Manager",
             border:     false,
@@ -209,12 +209,18 @@ var layout = new Ext.Panel({
                 layout: "border",
                 items: [this.searchpanel, this.getGrid() ],
             });
-TaskManagementBundlePlugin.panel.add(layout);
+this.panel.add(layout);
         var tabPanel = Ext.getCmp("pimcore_panel_tabs");
-        tabPanel.add(TaskManagementBundlePlugin.panel);
-        tabPanel.setActiveTab(TaskManagementBundlePlugin.panel);
+        tabPanel.add(this.panel);
+       tabPanel.setActiveItem("task_manager_panel");
         
+            this.panel.on("destroy", function () {
+                pimcore.globalmanager.remove("task_manager_panel");
+            }.bind(this));
         pimcore.layout.refresh();
+    }
+    
+    return this.panel;
         /* try {
             pimcore.globalmanager.get("pimcore_task_management").activate();
         }
@@ -279,29 +285,28 @@ TaskManagementBundlePlugin.panel.add(layout);
             }
         });
 
-        this.pagingtoolbar = pimcore.helpers.grid.buildDefaultPagingToolbar(this.store);
+        //this.pagingtoolbar = pimcore.helpers.grid.buildDefaultPagingToolbar(this.store);
 
         var typesColumns = [
             {
-                text: t("subject"), width: 50, sortable: true, dataIndex: 'subject', renderer: function (d) {
-                    return '<img src="/pimcore/static6/img/flat-color-icons/' + d + '.svg" style="height: 16px" />';
-                }
+                text: t("subject"), width: 50, sortable: true, dataIndex: 'subject'
             },
-            {text: t("description"), flex: 200, sortable: true, dataIndex: 'description', filter: 'string'},
-            {text: t("priority"), flex: 60, sortable: true, dataIndex: 'priority'},
-            {text: t("status"), flex: 60, sortable: true, dataIndex: 'status'},
-            {text: t("start date"), flex: 80, sortable: true, dataIndex: 'start_date'},
-            {text: t("completion date"), flex: 80, sortable: true, dataIndex: 'completion_date'},
-            {text: t("associated_element"), flex: 80, sortable: true, dataIndex: 'associated_element'},
+            {text: t("Description"), flex: 200, sortable: true, dataIndex: 'description', filter: 'string'},
             {
-                text: t("due date"), flex: 140, sortable: true, dataIndex: 'due_date',
-                renderer: function (d) {
-                    var date = new Date(d * 1000);
-                    return Ext.Date.format(date, "Y-m-d H:i:s");
-                },
-                filter: 'date'
+                text: t("Due date"), flex: 140, sortable: true, dataIndex: 'due_date',
+//                renderer: function (d) {
+//                    var date = new Date(d * 1000);
+//                    return Ext.Date.format(date, "Y-m-d H:i:s");
+//                },
+//                filter: 'date'
 
             },
+            {text: t("Priority"), flex: 60, sortable: true, dataIndex: 'priority'},
+            {text: t("Status"), flex: 60, sortable: true, dataIndex: 'status'},
+            {text: t("Start date"), flex: 80, sortable: true, dataIndex: 'start_date'},
+            {text: t("Completion date"), flex: 80, sortable: true, dataIndex: 'completion_date'},
+            {text: t("Associated Element"), flex: 80, sortable: true, dataIndex: 'associated_element'},
+            
             {
                 xtype: 'actioncolumn',
                 menuText: t('delete'),
@@ -548,11 +553,69 @@ TaskManagementBundlePlugin.panel.add(layout);
 
         this.selectionColumn = new Ext.selection.CheckboxModel();
        // this.selectionColumn.on("selectionchange", this.updateButtonStates.bind(this));
+ this.store = new Ext.data.JsonStore({
+        totalProperty: 'total',
+        pageSize: 10,
+        proxy: {
+            url: '../show_task_listing',
+            type: 'ajax',
+            reader: {
+                type: 'json',
+                rootProperty: 'data'
+            }
+        },
+        fields:  [
+                    'id', 'subject', 'description', 'due_date', 'priority', 'status', 'start_date', 'completion_date', 'associated_element'
+                ],
+         baseParams:{
+                showOpt: 1,
+                
+        },
+      listeners: {
+                beforeload: function (store) {
+                    this.store.getProxy().extraParams.limit = this.pagingtoolbar.pageSize;
+                    this.store.getProxy().extraParams.start = 0;
+                }.bind(this)            
+        }
+    });
+    this.pagingtoolbar = new Ext.PagingToolbar({
+            pageSize: 10,
+            store: this.store,
+            displayInfo: true,
+            displayMsg: '{0} - {1} /  {2}',
+            emptyMsg: 'No item found'
+    });
 
+      this.pagingtoolbar.add("-");
+
+        this.pagingtoolbar.add(new Ext.Toolbar.TextItem({
+            text: t("items_per_page")
+        }));
+        this.pagingtoolbar.add(new Ext.form.ComboBox({
+            store: [
+                [1, "1"],
+                [2, "2"],
+                [40, "40"],
+                [60, "60"],
+                [80, "80"],
+                [100, "100"]
+            ],
+            queryMode: "local",
+            width: 100,
+            value: 10,
+            triggerAction: "all",
+            listeners: {
+                select: function(box, rec, index) {
+                    this.pagingtoolbar.pageSize = intval(rec.data.field1);
+                    this.store.pageSize = intval(rec.data.field1);
+                    this.pagingtoolbar.moveFirst();
+                }.bind(this)
+            }
+        }));
         this.grid = new Ext.grid.GridPanel({
             frame: false,
             autoScroll: true,
-            //store: this.store,
+            store: this.store,
             columnLines: true,
             bbar: this.pagingtoolbar,
             stripeRows: true,
@@ -564,16 +627,17 @@ TaskManagementBundlePlugin.panel.add(layout);
             region: "center",
             columns: typesColumns,
             tbar: toolbar,
-            listeners: {
-                "rowclick": ""//this.updateButtonStates.bind(this)
+//            listeners: {
+//                "rowclick": ""//this.updateButtonStates.bind(this)
+//            },
+             viewConfig: {
+                enableRowBody: true,
+                showPreview: true,
             },
-            viewConfig: {
-                forceFit: true
-            }
         });
 
         //this.grid.on("rowcontextmenu", this.onRowContextmenu.bind(this));
-
+         this.store.load();
         return this.grid;
     },
 });
