@@ -1,0 +1,9 @@
+.pimcore_icon_download_smallx {
+    /*background: url(/pimcore/static/img/icon/download-small.png) left center no-repeat !important;*/
+    background: url(/pimcore/static/img/icon/download-medium.png);
+    background-size: cover;
+}
+
+.commonscreen_menu_icon {
+    background: url(/pimcore/static6/img/flat-color-icons/object.svg) center center no-repeat !important;
+}

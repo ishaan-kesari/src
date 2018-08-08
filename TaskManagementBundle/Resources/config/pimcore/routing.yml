@@ -1,0 +1,5 @@
+task_management:
+    resource: "@TaskManagementBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
