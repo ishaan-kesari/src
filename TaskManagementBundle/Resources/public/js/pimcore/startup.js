@@ -205,12 +205,12 @@ if (perspectiveCfg.inToolbar("extras")) {
             closable:   true,
            // items:      [this.getGrid()]
         });
-var layout = new Ext.Panel({
+            var layout = new Ext.Panel({
                 border: false,
                 layout: "border",
                 items: [this.searchpanel, this.getGrid() ],
             });
-this.panel.add(layout);
+            this.panel.add(layout);
         var tabPanel = Ext.getCmp("pimcore_panel_tabs");
         tabPanel.add(this.panel);
        tabPanel.setActiveItem("task_manager_panel");
@@ -307,15 +307,13 @@ this.panel.add(layout);
             {text: t("Start date"), flex: 80, sortable: true, dataIndex: 'start_date'},
             {text: t("Completion date"), flex: 80, sortable: true, dataIndex: 'completion_date'},
             {text: t("Associated Element"), flex: 80, sortable: true, dataIndex: 'associated_element'},
-            
             {
                 xtype: 'actioncolumn',
                 menuText: t('Edit'),
-                dataIndex: 'id',
+                text: t("Edit"),
                 width: 30,
                 items: [{
                     tooltip: t('Edit'),
-                    dataIndex: 'id',
                     icon: "/pimcore/static6/img/flat-color-icons/edit.svg",
                     handler: function (grid, rowIndex) {
                         var rec = grid.getStore().getAt(rowIndex);
@@ -331,13 +329,11 @@ this.panel.add(layout);
                                     var taskDetail = obj['success'][0];
                                     AddEditTaskForm('Edit',taskDetail);
                                 }
-                                
                             },
-
                             failure: function(response, opts) {
-                                console.log('server-side failure with status code ' + response.status);
+                                console.log('server-side failure with status code' + response.status);
                             }
-                        });
+                        });    
                     }.bind(this)
                 }]
             },
@@ -354,7 +350,7 @@ this.panel.add(layout);
                         Ext.Ajax.request({
                             url: '../delete_task',
                             params: {
-                                "id" : rec.getId()
+                                "id" : Ext.encode([rec.getId()])
                             },
                             method: 'GET',  
                             success: function(response, opts) {
@@ -370,6 +366,41 @@ this.panel.add(layout);
             }
         ];
         
+        var toolbar = Ext.create('Ext.Toolbar', {
+            cls: 'main-toolbar',
+            items: [
+                {
+                    text: t('Add Task'),
+                    handler: function() {
+                       AddEditTaskForm('Add',[]);
+                    },
+                    icon: "/pimcore/static6/img/flat-color-icons/add_row.svg",
+                    id: "pimcore_button_add",
+                    disabled: false
+                }, '-', {
+                    text: t('Delete Selected'),
+                    handler: this.deleteSelected.bind(this),
+                    iconCls: "pimcore_icon_delete",
+                    id: "pimcore_button_delete",
+                    disabled: false
+                }, 
+                {
+                    text: t('Completed'),
+                    handler: this.completedStatusUpdate.bind(this),
+                    iconCls: "pimcore_icon_flush_finish",
+                    id: "pimcore_recyclebin_button_flush",
+                    disabled: false
+                },
+                '->', {
+                    text: t("filter") + "/" + t("search"),
+                    xtype: "tbtext",
+                    style: "margin: 0 10px 0 0;"
+                },
+                this.filterField
+            ]
+        });
+             
+             
         function tConvert (time) {
             // Check correct time format and split into components
             time = time.toString ().match (/^([01]\d|2[0-3])(:)([0-5]\d)(:[0-5]\d)?$/) || [time];
@@ -381,30 +412,21 @@ this.panel.add(layout);
               time[0] = +time[0] % 12 || 12; // Adjust hours
             }
             return time.join (''); // return adjusted time or original string
-}
+        }
        
         function AddEditTaskForm(Use,taskDetail) {
             if(Use == 'Add') {
                 var panelTitle         = "Add Task";
                 var url                = 'save_task';
                 var msg                = 'Saved';
-                var description        ='';
-                var due_date           ='';
-                var priority           ='';
-                var status             ='';
-                var start_date         ='';
-                var completion_date    ='';
-                var associated_element ='';
-                var subject            ='';
-                
-                
+                var description = due_date = priority = status =
+                    start_date = completion_date = associated_element = '';
                 
             } else if(Use == 'Edit') {
                 var panelTitle = "Edit Task";
                 var url = 'update_task';
                 var msg = 'Updated';
                 var description             = taskDetail['description'];
-                
                 var due_date                = taskDetail['due_date'].split(" ")[0];
                 var due_date_time           = tConvert(taskDetail['due_date'].split(" ")[1]);
                 var priority                = taskDetail['priority'];
@@ -420,85 +442,32 @@ this.panel.add(layout);
             var AddTaskForm = Ext.create('Ext.form.Panel', {
                 renderTo: document.body,
                 height: 500,
-                width: 500,
+                width: 700,
                 bodyPadding: 10,
                 defaultType: 'textfield',
                 items: [
+                    {   
+                        xtype: 'textfield',
+                        fieldLabel: t('Subject'),
+                        labelWidth: 120,
+                        width:305,
+                        name: 'subject',
+                        value:subject
+                    },
                     {
                         xtype     : 'textareafield',
                         fieldLabel: 'Description',
+                        labelWidth: 120,
                         name      : 'description',
                         grow      : true,
                         anchor    : '100%',
                         allowBlank: false,
                         value     : description
-                    },
-                    {   
+                    },{   
                         xtype: 'fieldcontainer',
                         layout : 'hbox',
-                        fieldLabel: 'Due Date',
-                        items:[
-                            {
-                                xtype     : 'datefield',
-                                name      : 'due_date',
-                                width     : 120,
-                                listeners : {
-                                    render : function(datefield) {
-                                        if(Use == 'Edit')
-                                            datefield.setValue(new Date(due_date));
-                                    }
-                                },
-                            },
-                            {
-                                xtype: 'timefield',
-                                name: 'due_date_time',
-                                minValue: '12:00 AM',
-                                maxValue: '11:45 PM',
-                                increment: 15,
-                                width:100,
-                                listeners : {
-                                    render : function(datefield) {
-                                        if(Use == 'Edit')
-                                            datefield.setValue(due_date_time);
-                                    }
-                                },
-                            }
-                        ]
-                    },
-                    {
-                        xtype: 'combo',
-                        fieldLabel: 'Priority',
-                        name: 'priority',
-                        store: [
-                            ['High', 'High'],
-                            ['Normal', 'Normal'],
-                            ['Low', 'Low']
-                        ],
-                        fields: ['value', 'text'],
-                        queryMode: 'local',
-                        displayField: 'name',
-                        valueField: 'abbr',
-                        value:priority
-                    },
-                    {   xtype: 'combo',
-                        fieldLabel: 'Status',
-                        name: 'status',
-                        store: [
-                            ['Not started', 'Not started'],
-                            ['In Progress', 'In Progress'],
-                            ['Completed', 'Completed']
-                        ],
-                        fields: ['value', 'text'],
-                        queryMode: 'local',
-                        displayField: 'name',
-                        valueField: 'abbr',
-                        value:status
-                    },
-                    {   
-                        xtype: 'fieldcontainer',
-                        layout : 'hbox',
-                        fieldLabel: 'Start Date',
-                        
+                        fieldLabel: t('Start Date'),
+                        labelWidth: 120,
                         items:[
                             {
                                 xtype     : 'datefield',
@@ -527,12 +496,45 @@ this.panel.add(layout);
                             }
                         ]
                     },
-                     {   
+                    {   
                         xtype: 'fieldcontainer',
                         layout : 'hbox',
-                        fieldLabel: 'Completion Date',
-                        
+                        labelWidth: 120,
+                        fieldLabel: t('Due Date'),
                         items:[
+                            {
+                                xtype     : 'datefield',
+                                name      : 'due_date',
+                                width     : 100,
+                                listeners : {
+                                    render : function(datefield) {
+                                        if(Use == 'Edit')
+                                            datefield.setValue(new Date(due_date));
+                                    }
+                                },
+                            },
+                            {
+                                xtype: 'timefield',
+                                name: 'due_date_time',
+                                minValue: '12:00 AM',
+                                maxValue: '11:45 PM',
+                                increment: 15,
+                                width:100,
+                                listeners : {
+                                    render : function(datefield) {
+                                        if(Use == 'Edit')
+                                            datefield.setValue(due_date_time);
+                                    }
+                                },
+                            }
+                        ]
+                    },
+                    {   
+                        xtype: 'fieldcontainer',
+                        layout : 'hbox',
+                        fieldLabel: t('Completion Date'),
+                        labelWidth: 120,
+                            items:[
                             {
                                 xtype     : 'datefield',
                                 name      : 'completion_date',
@@ -561,7 +563,43 @@ this.panel.add(layout);
                         ]
                     },
                     {   xtype: 'combo',
-                        fieldLabel: 'Associated Element',
+                       
+                        fieldLabel: t('Status'),
+                        labelWidth: 120,
+                        name: 'status',
+                        width:305,
+                        store: [
+                            ['Not started', 'Not started'],
+                            ['In Progress', 'In Progress'],
+                            ['Completed', 'Completed']
+                        ],
+                        fields: ['value', 'text'],
+                        queryMode: 'local',
+                        displayField: 'name',
+                        valueField: 'abbr',
+                        value:status
+                    },
+                    
+                    {
+                        xtype: 'combo',
+                        labelWidth: 120,
+                        fieldLabel: t('Priority'),
+                        name: 'priority',
+                        width:305,
+                        store: [
+                            ['High', 'High'],
+                            ['Normal', 'Normal'],
+                            ['Low', 'Low']
+                        ],
+                        fields: ['value', 'text'],
+                        queryMode: 'local',
+                        displayField: 'name',
+                        valueField: 'abbr',
+                        value:priority
+                    },
+                    {   xtype: 'combo',
+                        labelWidth: 120,
+                        fieldLabel: t('Associated Element'),
                         name: 'associated_element',
                         store: [
                             ['Object', 'Object'],
@@ -572,20 +610,16 @@ this.panel.add(layout);
                         queryMode: 'local',
                         displayField: 'name',
                         valueField: 'abbr',
+                        width:305,
                         value:associated_element
-                    },
-                    {   
-                        xtype: 'textfield',
-                        fieldLabel: 'Subject',
-                        name: 'subject',
-                        value:subject
                     }
+                    
                 ]
             });
             var win = new Ext.Window({
                 modal:true,
                 title:panelTitle,
-                width:500,
+                width:700,
                 height:500,
                 closeAction :'hide',
                 plain       : true,
@@ -596,16 +630,20 @@ this.panel.add(layout);
                             var form = AddTaskForm.getForm();
                             form.submit({
                                 method  : 'POST',
-                                url:'../'+url,
+                                url:'../'+url, //for update/edit & add
                                 params: {
                                     "id" : taskDetail['id']
                                 },
                                 success : function() {
+                                    Ext.getCmp('mygrid').getStore().load({
+                                        params: {
+                                            data: JSON.stringify({})
+                                        }
+                                    });
                                     Ext.Msg.alert('Thank You', 'Your Task is '+msg, function() {
                                         AddTaskForm.reset();
                                         win.close();
-                                        //if(Use == 'Edit')
-                                           //grid.getStore().removeAt(rowIndex);
+                                          
                                     });
                                 }
                             });
@@ -616,80 +654,44 @@ this.panel.add(layout);
             win.show();
         }
         
-
-        var toolbar = Ext.create('Ext.Toolbar', {
-            cls: 'main-toolbar',
-            items: [
-                {
-                    text: t('Add Task'),
-                    handler: function() {
-                       AddEditTaskForm('Add',[]);
-                    },
-                    iconCls: "pimcore_icon_restore",
-                    id: "pimcore_button_add",
-                    disabled: false
-                }, '-', {
-                    text: t('delete_selected'),
-                    handler: "",//this.deleteSelected.bind(this),
-                    iconCls: "pimcore_icon_delete",
-                    id: "pimcore_button_delete",
-                    disabled: true
-                }, 
-                {
-                    text: t('Archive'),
-                    handler: "",//this.onFlush.bind(this),
-                    iconCls: "pimcore_icon_flush_recyclebin",
-                    id: "pimcore_recyclebin_button_flush",
-                    disabled: true
-                },
-                '->', {
-                    text: t("filter") + "/" + t("search"),
-                    xtype: "tbtext",
-                    style: "margin: 0 10px 0 0;"
-                },
-                this.filterField
-            ]
-        });
-
         this.selectionColumn = new Ext.selection.CheckboxModel();
-       // this.selectionColumn.on("selectionchange", this.updateButtonStates.bind(this));
- this.store = new Ext.data.JsonStore({
-        totalProperty: 'total',
-        pageSize: 10,
-        proxy: {
-            url: '../show_task_listing',
-            type: 'ajax',
-            reader: {
-                type: 'json',
-                rootProperty: 'data'
+        this.selectionColumn.on("selectionchange", this.buttonStates.bind(this));
+        this.store = new Ext.data.JsonStore({
+            totalProperty: 'total',
+            pageSize: 10,
+            proxy: {
+                url: '../show_task_listing',
+                type: 'ajax',
+                reader: {
+                    type: 'json',
+                    rootProperty: 'data'
+                }
+            },
+            fields:  [
+                        'id', 'subject', 'description', 'due_date', 'priority', 'status', 'start_date', 'completion_date', 'associated_element'
+                    ],
+             baseParams:{
+                    showOpt: 1,
+
+            },
+            listeners: {
+                    beforeload: function (store) {
+                        this.store.getProxy().extraParams.limit = this.pagingtoolbar.pageSize;
+                        this.store.getProxy().extraParams.start = 0;
+                    }.bind(this)            
             }
-        },
-        fields:  [
-                    'id', 'subject', 'description', 'due_date', 'priority', 'status', 'start_date', 'completion_date', 'associated_element'
-                ],
-         baseParams:{
-                showOpt: 1,
-                
-        },
-      listeners: {
-                beforeload: function (store) {
-                    this.store.getProxy().extraParams.limit = this.pagingtoolbar.pageSize;
-                    this.store.getProxy().extraParams.start = 0;
-                }.bind(this)            
-        }
-    });
+        });
         
     
-    this.pagingtoolbar = new Ext.PagingToolbar({
+        this.pagingtoolbar = new Ext.PagingToolbar({
             pageSize: 10,
             store: this.store,
             displayInfo: true,
             displayMsg: '{0} - {1} /  {2}',
             emptyMsg: 'No item found'
-    });
+        });
 
-      this.pagingtoolbar.add("-");
-
+        this.pagingtoolbar.add("-");
         this.pagingtoolbar.add(new Ext.Toolbar.TextItem({
             text: t("items_per_page")
         }));
@@ -726,10 +728,11 @@ this.panel.add(layout);
             plugins: ['pimcore.gridfilters'],
             title: t("Task Manager"),
             trackMouseOver:false,
-            disableSelection:true,
+            //disableSelection:true,
             region: "center",
             columns: typesColumns,
             tbar: toolbar,
+            id:'mygrid',
 //            listeners: {
 //                "rowclick": ""//this.updateButtonStates.bind(this)
 //            },
@@ -740,9 +743,78 @@ this.panel.add(layout);
         });
 
         //this.grid.on("rowcontextmenu", this.onRowContextmenu.bind(this));
-         this.store.load();
+        this.store.load();
+       
+            
         return this.grid;
     },
-});
+    buttonStates: function() {
+        var selectedRows = this.grid.getSelectionModel().getSelection();
 
+        if (selectedRows.length >= 1) {
+           
+            Ext.getCmp("pimcore_button_delete").enable();
+        } else {
+            
+            Ext.getCmp("pimcore_button_delete").disable();
+        }
+    },
+    completedStatusUpdate : function(data, rowNumber) {
+        var arraySelected =this.grid.getSelectionModel().getSelection();
+        id = []; var i=0;
+        arraySelected.map(function(value) {
+            id[i] = value['data']['id'];
+            i++;
+        });
+
+        console.log(arraySelected);
+        Ext.Ajax.request({
+            url: '../completed_task',
+            params: {
+                "id" :Ext.encode(id)
+            },
+            method: 'GET',  
+            success: function(response, opts) {
+                Ext.getCmp('mygrid').getStore().load({
+                    params: {
+                        data: JSON.stringify({})
+                    }
+                });
+                Ext.Msg.alert('Thank You', 'Your task status changed to completed.', function() {});
+            },
+            failure: function(response, opts) {
+                console.log('server-side failure with status code' + response.status);
+            }
+        }); 
+    },
+    deleteSelected: function(data, rowNumber) {
+        var grid = data.up('gridpanel');
+        var arraySelected =grid.getSelectionModel().getSelection();
+        id = []; var i=0;
+        arraySelected.map(function(value) {
+            id[i] = value['data']['id'];
+            i++;
+        });
+
+        Ext.Ajax.request({
+            url: '../delete_task',
+            params: {
+                id : Ext.encode(id)
+            },
+            method: 'GET',  
+            success: function(response, opts) {
+                Ext.getCmp('mygrid').getStore().load({
+                    params: {
+                        data: JSON.stringify({})
+                    }
+                });
+                Ext.Msg.alert('Thank You', 'Your task is deleted.',function() {});
+            },
+            failure: function(response, opts) {
+                console.log('server-side failure with status code' + response.status);
+            }
+        }); 
+    }
+});
+             
 var TaskManagementBundlePlugin = new pimcore.plugin.TaskManagementBundle();
