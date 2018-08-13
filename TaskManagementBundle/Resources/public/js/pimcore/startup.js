@@ -1,6 +1,8 @@
 pimcore.registerNS("pimcore.plugin.TaskManagementBundle");
 
 pimcore.plugin.TaskManagementBundle = Class.create(pimcore.plugin.admin, {
+    
+    
     getClassName: function () {
         return "pimcore.plugin.TaskManagementBundle";
     },
@@ -19,26 +21,25 @@ pimcore.plugin.TaskManagementBundle = Class.create(pimcore.plugin.admin, {
     pimcoreReady: function (params, broker) {
        //alert("TaskManagementBundle ready!");
        this.addMenuIntools(this);
+       /*
+        scope.on("destroy", function () {
+            pimcore.globalmanager.remove("task_manegment_menu");
+        }.bind(this));
+
+        pimcore.layout.refresh(); */
     },
     addMenuIntools: function (scope) {
-        var navigation = Ext.get("pimcore_menu_extras");
-         var user = pimcore.globalmanager.get("user");
-        var userPermissions = user.permissions;
-        
+        var user = pimcore.globalmanager.get("user");
         if (user.admin == true ) {
-           // var ulElement = navigation.selectNode('ul');
-            var li = document.createElement("li");
-
-            li.setAttribute("id", "task_manegment_menu");
-            li.setAttribute("class", "pimcore_menu_mds pimcore_menu_item pimcore_menu_needs_children");
-           
-            li.setAttribute("data-menu-tooltip", "Task Management");
-            navigation.insertSibling(li,'after');
-            pimcore.helpers.initMenuTooltips();
-            Ext.get("task_manegment_menu").on("click", function (e, el) {
-               
-               scope.showTab();
+            var toolbar = pimcore.globalmanager.get("layout_toolbar");
+            var action = new Ext.Action({
+                id: "task_management_menu",
+                text: "Task Management",
+                iconCls:"task_management_icon pimcore_menu_mds pimcore_menu_item pimcore_menu_needs_hildren",
+                handler: function() { scope.showTab(); },
             });
+            toolbar.extrasMenu.add(action);
+            pimcore.helpers.initMenuTooltips();
         } else {
             return false;
         }
@@ -121,6 +122,7 @@ if (perspectiveCfg.inToolbar("extras")) {
                 referenceHolder: true,
                 margin:20,
                 collapsible: true,
+                collapsed: true,
                 collapseDirection: 'left',
                 bodyPadding: 3,
                 defaultButton: 'task_search_button',
@@ -150,8 +152,8 @@ if (perspectiveCfg.inToolbar("extras")) {
                     items :[
                         {
                             xtype:'textfield',
-                            name: 'subject',
-                            fieldLabel: t('Subject'),
+                            name: 'search',
+                            fieldLabel: t('Search'),
                             width: 320,
                             listWidth: 150
                         },{
@@ -196,32 +198,36 @@ if (perspectiveCfg.inToolbar("extras")) {
                             valueField: 'key'
                         }]
                 }]});
+        
         if (!this.panel) {
-       this.panel = new Ext.Panel({
-            id:         "task_manager_panel",
-            title:      "Task Manager",
-            border:     false,
-            layout:     "fit",
-            closable:   true,
-           // items:      [this.getGrid()]
-        });
+            this.panel = new Ext.Panel({
+                 id:         "task_manager_panel",
+                 title:      "Task Manager",
+                 border:     false,
+                 layout:     "fit",
+                 closable:   true,
+                // items:      [this.getGrid()]
+            });
+             
             var layout = new Ext.Panel({
                 border: false,
                 layout: "border",
                 items: [this.searchpanel, this.getGrid() ],
             });
+             
             this.panel.add(layout);
-        var tabPanel = Ext.getCmp("pimcore_panel_tabs");
-        tabPanel.add(this.panel);
-       tabPanel.setActiveItem("task_manager_panel");
-        
+            var tabPanel = Ext.getCmp("pimcore_panel_tabs");
+            tabPanel.add(this.panel);
+            tabPanel.setActiveItem("task_manager_panel");
+
             this.panel.on("destroy", function () {
                 pimcore.globalmanager.remove("task_manager_panel");
             }.bind(this));
-        pimcore.layout.refresh();
-    }
+            
+            pimcore.layout.refresh();
+        }
     
-    return this.panel;
+        return this.panel;
         /* try {
             pimcore.globalmanager.get("pimcore_task_management").activate();
         }
@@ -290,7 +296,7 @@ if (perspectiveCfg.inToolbar("extras")) {
 
         var typesColumns = [
             {
-                text: t("subject"), width: 50, sortable: true, dataIndex: 'subject'
+                text: t("Subject"), width: 50, sortable: true, dataIndex: 'subject'
             },
             {text: t("Description"), flex: 200, sortable: true, dataIndex: 'description', filter: 'string'},
             {
@@ -309,36 +315,6 @@ if (perspectiveCfg.inToolbar("extras")) {
             {text: t("Associated Element"), flex: 80, sortable: true, dataIndex: 'associated_element'},
             {
                 xtype: 'actioncolumn',
-                menuText: t('Edit'),
-                text: t("Edit"),
-                width: 30,
-                items: [{
-                    tooltip: t('Edit'),
-                    icon: "/pimcore/static6/img/flat-color-icons/edit.svg",
-                    handler: function (grid, rowIndex) {
-                        var rec = grid.getStore().getAt(rowIndex);
-                        Ext.Ajax.request({
-                            url: '../current_task_detail',
-                            params: {
-                                "id" :rec.getId()
-                            },
-                            method: 'GET',  
-                            success: function(response, opts) {
-                                var obj = Ext.decode(response.responseText);
-                                if(obj['success'][0]) {
-                                    var taskDetail = obj['success'][0];
-                                    AddEditTaskForm('Edit',taskDetail);
-                                }
-                            },
-                            failure: function(response, opts) {
-                                console.log('server-side failure with status code' + response.status);
-                            }
-                        });    
-                    }.bind(this)
-                }]
-            },
-            {
-                xtype: 'actioncolumn',
                 menuText: t('delete'),
                 text: t("Delete"),
                 width: 30,
@@ -346,13 +322,15 @@ if (perspectiveCfg.inToolbar("extras")) {
                     tooltip: t('delete'),
                     icon: "/pimcore/static6/img/flat-color-icons/delete.svg",
                     handler: function (grid, rowIndex) {
+                        console.log(grid);
+                        console.log(rowIndex);
                         var rec = grid.getStore().getAt(rowIndex);
                         Ext.Ajax.request({
                             url: '../delete_task',
                             params: {
                                 "id" : Ext.encode([rec.getId()])
                             },
-                            method: 'GET',  
+                            method: 'GET',
                             success: function(response, opts) {
                                 grid.getStore().removeAt(rowIndex);
                             },
@@ -382,14 +360,16 @@ if (perspectiveCfg.inToolbar("extras")) {
                     handler: this.deleteSelected.bind(this),
                     iconCls: "pimcore_icon_delete",
                     id: "pimcore_button_delete",
-                    disabled: false
+                    disabled: true
                 }, 
                 {
                     text: t('Completed'),
                     handler: this.completedStatusUpdate.bind(this),
-                    iconCls: "pimcore_icon_flush_finish",
-                    id: "pimcore_recyclebin_button_flush",
-                    disabled: false
+                    iconCls: "task_completed_icon",
+                    //icon:"../../../../static6/images/task_completed.svg",
+                    //icon: "/pimcore/static6/img/flat-color-icons/task_completed.svg",
+                    id: "pimcore_button_completed",
+                    disabled: true
                 },
                 '->', {
                     text: t("filter") + "/" + t("search"),
@@ -437,7 +417,22 @@ if (perspectiveCfg.inToolbar("extras")) {
                 var completion_date_time    = tConvert(taskDetail['completion_date'].split(" ")[1]);
                 var associated_element      = taskDetail['associated_element'];
                 var subject                 = taskDetail['subject'];
-            }    
+            }   
+            
+            
+            var AssociationFeilds = Ext.define('MyModel', {
+                    extend: 'Ext.data.Model',
+                    fields: [
+                        {
+                            name: 'id'
+                        },
+                        {
+                            name: 'relationId',
+                            reference: 'Relation',
+                            unique: true
+                        }
+                    ]
+                });
             
             var AddTaskForm = Ext.create('Ext.form.Panel', {
                 renderTo: document.body,
@@ -496,7 +491,7 @@ if (perspectiveCfg.inToolbar("extras")) {
                             }
                         ]
                     },
-                    {   
+                    {
                         xtype: 'fieldcontainer',
                         layout : 'hbox',
                         labelWidth: 120,
@@ -612,10 +607,18 @@ if (perspectiveCfg.inToolbar("extras")) {
                         valueField: 'abbr',
                         width:305,
                         value:associated_element
+                    },
+                    {
+                        xtype: 'fieldcontainer',
+                        layout : 'hbox',
+                        fieldLabel: t('Association Element'),
+                        labelWidth: 120,
+                        items:[AssociationFeilds] 
                     }
                     
                 ]
-            });
+            }); 
+            
             var win = new Ext.Window({
                 modal:true,
                 title:panelTitle,
@@ -682,7 +685,6 @@ if (perspectiveCfg.inToolbar("extras")) {
             }
         });
         
-    
         this.pagingtoolbar = new Ext.PagingToolbar({
             pageSize: 10,
             store: this.store,
@@ -733,9 +735,69 @@ if (perspectiveCfg.inToolbar("extras")) {
             columns: typesColumns,
             tbar: toolbar,
             id:'mygrid',
-//            listeners: {
-//                "rowclick": ""//this.updateButtonStates.bind(this)
-//            },
+            listeners: {
+                itemcontextmenu: function(grid, record, item, rowIndex, e, eOpts) {
+                    var menu_grid = new Ext.menu.Menu({
+                        items:[
+                            { 
+                                text: 'Edit',
+                                icon: '/pimcore/static6/img/flat-color-icons/edit.svg',
+                                handler: function (grid, rowIndex) {
+                                    Ext.Ajax.request({
+                                        url: '../current_task_detail',
+                                        params: {
+                                            "id" :record.data.id
+                                        },
+                                        method: 'GET',  
+                                        success: function(response, opts) {
+                                            var obj = Ext.decode(response.responseText);
+                                            if(obj['success'][0]) {
+                                                var taskDetail = obj['success'][0];
+                                                AddEditTaskForm('Edit',taskDetail);
+                                            }
+                                        },
+                                        failure: function(response, opts) {
+                                            console.log('server-side failure with status code' + response.status);
+                                        }
+                                    });    
+                                }.bind(this)
+                            },
+                            { 
+                                text: t('Delete'),
+                                icon: '/pimcore/static6/img/flat-color-icons/delete.svg',
+                                handler: function () {
+                                    var rec = grid.getStore().getAt(rowIndex);
+                                    Ext.Ajax.request({
+                                        url: '../delete_task',
+                                        params: {
+                                            "id" : Ext.encode([rec.getId()])
+                                        },
+                                        method: 'GET',  
+                                        success: function(response, opts) {
+                                            grid.getStore().removeAt(rowIndex);
+                                        },
+
+                                        failure: function(response, opts) {
+                                            console.log('server-side failure with status code ' + response.status);
+                                        }
+                                    })
+                                }
+                            },
+                            { 
+                                text: t('View'),
+                                icon: '/pimcore/static6/img/flat-color-icons/view.svg',
+                                handler: function (data,rowIndex) {
+                                    
+                                }
+                            }
+                        ]
+                    });
+                    var position = [e.getX()-10, e.getY()-10];
+                    e.stopEvent();
+                    menu_grid.showAt(position);
+                }
+            },
+            
              viewConfig: {
                 enableRowBody: true,
                 showPreview: true,
@@ -752,15 +814,16 @@ if (perspectiveCfg.inToolbar("extras")) {
         var selectedRows = this.grid.getSelectionModel().getSelection();
 
         if (selectedRows.length >= 1) {
-           
             Ext.getCmp("pimcore_button_delete").enable();
+            Ext.getCmp("pimcore_button_completed").enable();
         } else {
-            
             Ext.getCmp("pimcore_button_delete").disable();
+            Ext.getCmp("pimcore_button_completed").disable();
         }
     },
     completedStatusUpdate : function(data, rowNumber) {
-        var arraySelected =this.grid.getSelectionModel().getSelection();
+        var grid = data.up('gridpanel');
+        var arraySelected = grid.getSelectionModel().getSelection();
         id = []; var i=0;
         arraySelected.map(function(value) {
             id[i] = value['data']['id'];
@@ -815,6 +878,10 @@ if (perspectiveCfg.inToolbar("extras")) {
             }
         }); 
     }
+     
 });
+
+
+
              
 var TaskManagementBundlePlugin = new pimcore.plugin.TaskManagementBundle();

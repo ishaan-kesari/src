@@ -1,0 +1,7 @@
+
+.task_management_icon {
+    background: url(../img/task_managment.svg) center center no-repeat !important;
+}
+.task_completed_icon {
+    background: url(../img/task_completed.svg) center center no-repeat !important;
+}

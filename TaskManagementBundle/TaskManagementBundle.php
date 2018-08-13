@@ -12,4 +12,11 @@ class TaskManagementBundle extends AbstractPimcoreBundle
             '/bundles/taskmanagement/js/pimcore/startup.js'
         ];
     }
+
+    public function getCssPaths()
+    {
+        return [
+            '/bundles/taskmanagement/css/style.css'
+        ];
+    }
 }
