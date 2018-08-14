@@ -1,6 +1,6 @@
 <?php
  
-namespace TaskManagementBundle\Model\TaskManagement\Listing;
+namespace TaskManagementBundle\Model\Tasks\Listing;
  
 use Pimcore\Model\Listing;
 use TaskManagementBundle\Model;
@@ -11,7 +11,7 @@ class Dao extends Listing\Dao\AbstractDao
     /**
      * @var string
      */
-    protected $tableName = 'task_management';
+    protected $tableName = 'tm_tasks';
  
     /**
      * Get tableName, either for localized or non-localized data.
@@ -71,7 +71,7 @@ class Dao extends Listing\Dao\AbstractDao
  
         $objects = array();
         foreach ($list as $o_id) {
-            if ($object = Model\TaskManagement::getById($o_id)) {
+            if ($object = Model\Tasks::getById($o_id)) {
                 $objects[] = $object;
             }
         }
@@ -82,7 +82,7 @@ class Dao extends Listing\Dao\AbstractDao
     }
  
     /**
-     * Loads a list for the specicifies parameters, returns an array of ids.
+     * Loads a list for the specified parameters, returns an array of ids.
      *
      * @return array
      * @throws \Exception

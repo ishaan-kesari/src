@@ -3,7 +3,7 @@
 /*
  * TaskManagementBundle
 */
-namespace TaskManagementBundle\Model\TaskManagement;
+namespace TaskManagementBundle\Model\Tasks;
 use Pimcore\Model\Dao\AbstractDao;
 /*
  * Contains Task Management data access object function definition such as save/delete 
@@ -13,7 +13,8 @@ use Pimcore\Model\Dao\AbstractDao;
  */
 class Dao extends AbstractDao {
  
-    protected $tableName = 'task_management';
+    //tm_tasks
+    protected $tableName = 'tm_tasks';
  
     /**
      * get Task by id
@@ -46,7 +47,7 @@ class Dao extends AbstractDao {
         
         if(count($vars))
             foreach ($vars as $k => $v) {
-
+                
                 if(!in_array($k, $validColumns))
                     continue;
                
@@ -59,15 +60,19 @@ class Dao extends AbstractDao {
  
                 if(is_bool($value))
                     $value = (int)$value;
- 
-                $buffer[$k] = $value;
+                
+                if($value != null)
+                   $buffer[$k] = $value;
+                    
             }
-        
+            
+            
+            
         if($this->model->getId() !== null) {
            $this->db->update($this->tableName, $buffer, ["id" => $this->model->getId()]);
            return;
         }
- 
+            
         $this->db->insert($this->tableName, $buffer);
         $this->model->setId($this->db->lastInsertId());
     }

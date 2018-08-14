@@ -1,6 +1,6 @@
 <?php
  
-namespace TaskManagementBundle\Model\TaskManagement;
+namespace TaskManagementBundle\Model\Tasks;
  
 use Pimcore\Model;
 use Zend\Paginator\Adapter\AdapterInterface;

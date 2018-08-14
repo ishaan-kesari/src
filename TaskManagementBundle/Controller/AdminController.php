@@ -1,7 +1,7 @@
 <?php
 
 /* 
- * TaskManagementBundle
+ * 
  * 
  */
 
@@ -13,11 +13,12 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use TaskManagementBundle\Model;
 use \Pimcore\Model\DataObject;
+use Carbon\Carbon;
 
 /* 
  * Task Backend Controller
  * 
- * @method SaveTask(Request $request)
+ * @method saveTask(Request $request)
  * @method indexAction(Request $request)
  * 
  */
@@ -31,31 +32,29 @@ class AdminController extends FrontendController
     /**
      * @Route("/save_task")
      */
-    public function SaveTask(Request $request)
-    { 
-        $Description       =  $_POST['description'];
-        $DueDate           =  date('Y-m-d H:i:s', strtotime($_POST['due_date']." ".$_POST['due_date_time']));
-        $Priority          =  $_POST['priority'];
-        $Status            =  $_POST['status']; 
-        $StartDate         =  date('Y-m-d H:i:s', strtotime($_POST['start_date']." ".$_POST['start_date_time']));
-        $CompletionDate    =  date('Y-m-d H:i:s', strtotime($_POST['completion_date']." ".$_POST['completion_date_time']));
-        $AssociatedElement =  $_POST['associated_element'];
-        $Subject           =  $_POST['subject'];
+    public function saveTask(Request $request)
+    {        
+        $description       =  $request->get('description');
+        $dueDate           =  Carbon::createFromFormat('m/d/y g:ia', $request->get('dueDate')." ".$request->get('dueDateTime'));
+        $priority          =  $request->get('priority');
+        $status            =  $request->get('status'); 
+        $startDate         =  Carbon::createFromFormat('m/d/y g:ia', $request->get('startDate')." ".$request->get('startDateTime'));
+        $completionDate    =  Carbon::createFromFormat('m/d/y g:ia', $request->get('completionDate')." ".$request->get('completionDateTime'));
+        $associatedElement =  $request->get('associatedElement');
+        $subject           =  $request->get('subject');
      
-        $TaskManagmentObj = new Model\TaskManagement();
-        $TaskManagmentObj->setDescription($Description);
-        $TaskManagmentObj->setDue_date($DueDate);
-        $TaskManagmentObj->setPriority($Priority);
-        $TaskManagmentObj->setStatus($Status);
-        $TaskManagmentObj->setStart_date($StartDate);
-        $TaskManagmentObj->setCompletion_date($CompletionDate);
-        $TaskManagmentObj->setAssociated_element($AssociatedElement);
-        $TaskManagmentObj->setSubject($Subject);
-        $TaskManagmentObj->save();
-        $response = \GuzzleHttp\json_encode([
-            'success'=>'Added'
-        ]);
-        return new Response($response);
+        $tasksObj = new Model\Tasks();
+        $tasksObj->setDescription($description);
+        $tasksObj->setDueDate($dueDate);
+        $tasksObj->setPriority($priority);
+        $tasksObj->setStatus($status);
+        $tasksObj->setStartDate($startDate);
+        $tasksObj->setCompletionDate($completionDate);
+        $tasksObj->setAssociatedElement($associatedElement);
+        $tasksObj->setSubject($subject);
+        $tasksObj->save();
+    
+        return $this->json(array('success' => 'TaskAdded'));
     }
     
     /**
@@ -66,51 +65,27 @@ class AdminController extends FrontendController
         $start = $request->get('start');
         $limit = $request->get('limit');
      
-        $TaskListingObj = new \TaskManagementBundle\Model\TaskManagement\Listing();
-        $TaskListingObj->setOffset($start);
-        $TaskListingObj->setLimit($limit);
-        $totalCount = $TaskListingObj->count();
-        $TaskListingData = $TaskListingObj->load(); 
-        $response =  \GuzzleHttp\json_encode(["success" => true,
-            'data' => $TaskListingData,
-            'total' => $totalCount]);
-        return new Response($response);
-    }
-       
-    /** 
-     * Update Task Detail for specific id
-     * 
-     * 
-     * @Route("/update_task")
-     * 
-    */
-    public function UpdateTask() {
-        $id                = $_POST['id'];
-        $Description       = $_POST['description'];
-        $DueDate           = date('Y-m-d H:i:s', strtotime($_POST['due_date']." ".$_POST['due_date_time']));
-        $Priority          = $_POST['priority'];
-        $Status            = $_POST['status']; 
-        $StartDate         = date('Y-m-d H:i:s', strtotime($_POST['start_date']." ".$_POST["due_date_time"]));
-        $CompletionDate    = date('Y-m-d H:i:s', strtotime($_POST['completion_date']." ".$_POST["completion_date_time"]));
-        $AssociatedElement = $_POST['associated_element'];
-        $Subject           = $_POST['subject'];
+        $taskListingObj = new Model\Tasks\Listing();
+        $taskListingObj->setOffset($start);
+        $taskListingObj->setLimit($limit);
+        $totalCount = $taskListingObj->count();
+        $taskListingData = $taskListingObj->load(); 
         
-        $TaskManagmentObj = new Model\TaskManagement();
-        $TaskManagmentObj->setId($id);
-        $TaskManagmentObj->setDescription($Description);
-        $TaskManagmentObj->setDue_date($DueDate);
-        $TaskManagmentObj->setPriority($Priority);
-        $TaskManagmentObj->setStatus($Status);
-        $TaskManagmentObj->setStart_date($StartDate);
-        $TaskManagmentObj->setCompletion_date($CompletionDate);
-        $TaskManagmentObj->setAssociated_element($AssociatedElement);
-        $TaskManagmentObj->setSubject($Subject);
-        $TaskManagmentObj->save();
+        //p_r($taskListingData);
+        
+       /*return $this->json(["success" => true,
+            'data' => $taskListingData,
+            'total' => $totalCount]); */
+        
+            
         $response = \GuzzleHttp\json_encode([
-            'success'=>'Updated'
-        ]);
+            "success" => true,
+            'data' => $taskListingData,
+            'total' => $totalCount]);
+        
         return new Response($response);
     }
+    
     
     /**
      * Task Detail for specific id
@@ -119,16 +94,58 @@ class AdminController extends FrontendController
      * @return array task detail
      * 
     */
-    public function CurrentTaskDetail() {
-        $id= $_GET['id'];
-        $TaskListingObj = new \TaskManagementBundle\Model\TaskManagement\Listing();
-        $TaskListingObj->setCondition("id = ?", $id)->setLimit(1);
-        $TaskDetail = $TaskListingObj->load(); 
+    public function currentTaskDetail(Request $request) {
+        $id = $request->get('id');
+        $taskListingObj = new Model\Tasks\Listing();
+        $taskListingObj->setCondition("id = ?", $id)->setLimit(1);
+        $taskDetail = $taskListingObj->load(); 
+        
+        /*
+        return $this->json([
+            'success'=>$taskDetail
+        ]);*/
+        
         $response = \GuzzleHttp\json_encode([
-            'success'=>$TaskDetail
-        ]);
+            'success'=>$taskDetail]);
+        
         return new Response($response);
     }
+    
+       
+    /** 
+     * Update Task Detail for specific id
+     * 
+     * 
+     * @Route("/update_task")
+     * 
+    */
+    public function updateTask(Request $request) {
+        $id                =  $request->get('id');
+        $description       =  $request->get('description');
+        $dueDate           =  Carbon::createFromFormat('m/d/y g:ia', $request->get('dueDate')." ".$request->get('dueDateTime'));
+        $priority          =  $request->get('priority');
+        $status            =  $request->get('status'); 
+        $startDate         =  Carbon::createFromFormat('m/d/y g:ia', $request->get('startDate')." ".$request->get('startDateTime'));
+        $completionDate    =  Carbon::createFromFormat('m/d/y g:ia', $request->get('completionDate')." ".$request->get('completionDateTime'));
+        $associatedElement =  $request->get('associatedElement');
+        $subject           =  $request->get('subject');
+        
+        $tasksObj = new Model\Tasks();
+        $tasksObj->setId($id);
+        $tasksObj->setDescription($description);
+        $tasksObj->setDueDate($dueDate);
+        $tasksObj->setPriority($priority);
+        $tasksObj->setStatus($status);
+        $tasksObj->setStartDate($startDate);
+        $tasksObj->setCompletionDate($completionDate);
+        $tasksObj->setAssociatedElement($associatedElement);
+        $tasksObj->setSubject($subject);
+        $tasksObj->save();
+    
+        return $this->json(array('success' => 'updated'));
+    }
+    
+    
     
     /**
      * Delete selected task
@@ -136,18 +153,16 @@ class AdminController extends FrontendController
      * @Route("/delete_task")
      * 
     */
-    public function DeleteTask() {
-        $id= json_decode($_GET['id']);
+    public function deleteTask(Request $request) {
+        $id= json_decode($request->get('id'));
         
-        $TaskManagmentObj = new Model\TaskManagement();
+        $tasksObj = new Model\Tasks();
         for($i=0; $i<sizeof($id);$i++) {
-            $TaskManagmentObj->setId($id[$i]);
-            $TaskManagmentObj->delete();
+            $tasksObj->setId($id[$i]);
+            $tasksObj->delete();
         }
-        $response = \GuzzleHttp\json_encode([
-            'success'=>'Deleted'
-        ]);
-        return new Response($response);
+        
+        return $this->json(array('success' => 'deleted'));
     }
     
     /**
@@ -156,17 +171,16 @@ class AdminController extends FrontendController
      * @Route("/completed_task")
      * 
     */
-    public function CompletedTask() {
-        $id= json_decode($_GET['id']);
-        $TaskManagmentObj = new Model\TaskManagement();
+    public function completedTask(Request $request) {
+        $id= json_decode($request->get('id'));
+        $TaskManagmentObj = new Model\Tasks();
         for($i=0; $i<sizeof($id);$i++) {
             $TaskManagmentObj->setId($id[$i]);
-            $TaskManagmentObj->setStatus('Completed');      
+            $TaskManagmentObj->setStatus('Completed');
             $TaskManagmentObj->save();
         }
-        $response = \GuzzleHttp\json_encode([
-            'success'=>'Status updated to completed'
-        ]);
-        return new Response($response);
+       
+        return $this->json(array('success' => 'Status updated to completed'));
+        
     }
 }

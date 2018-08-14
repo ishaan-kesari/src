@@ -10,7 +10,7 @@ use Pimcore\Model\AbstractModel;
 /*
  * Task Management table getter and setter defination
  * */
-class TaskManagement extends AbstractModel {
+class Tasks extends AbstractModel {
  
     /**
      * @var bigint(20)
@@ -25,7 +25,7 @@ class TaskManagement extends AbstractModel {
     /**
      * @var datetime
     */
-    public $due_date;
+    public $dueDate;
     
     /**
      * @var enum
@@ -40,17 +40,17 @@ class TaskManagement extends AbstractModel {
     /**
      * @var datetime
      */
-    public $start_date;
+    public $startDate;
     
     /**
      * @var datetime
      */
-    public $completion_date;
+    public $completionDate;
     
     /**
      * @var enum
      */
-    public $associated_element;
+    public $associatedElement;
     
     
     /**
@@ -111,15 +111,15 @@ class TaskManagement extends AbstractModel {
     /**
      * @param $due_date
      */
-    public function setDue_date($due_date) {
-        $this->due_date = $due_date;
+    public function setDueDate($dueDate) {
+        $this->dueDate = $dueDate;
     }
  
     /**
      * @return datetime
      */
-    public function getDue_date() { 
-        return $this->due_date;
+    public function getDueDate() { 
+        return $this->dueDate;
     }
  
     
@@ -156,45 +156,45 @@ class TaskManagement extends AbstractModel {
     /**
      * @param $start_date
      */
-    public function setStart_date($start_date) {
-        $this->start_date = $start_date;
+    public function setStartDate($startDate) {
+        $this->startDate = $startDate;
     }
  
     /**
      * @return datetime
      */
-    public function getStart_date() {
-        return $this->start_date;
+    public function getStartDate() {
+        return $this->startDate;
     }
     
     
     /**
      * @param $completion_date
      */
-    public function setCompletion_date($completion_date) {
-        $this->completion_date = $completion_date;
+    public function setCompletionDate($completionDate) {
+        $this->completionDate = $completionDate;
     }
  
     /**
      * @return datetime
      */
-    public function getCompletion_date() {
-        return $this->completion_date;
+    public function getCompletionDate() {
+        return $this->completionDate;
     }
     
     
     /**
      * @param $associated_element
      */
-    public function setAssociated_element($associated_element) {
-        $this->associated_element = $associated_element;
+    public function setAssociatedElement($associatedElement) {
+        $this->associatedElement = $associatedElement;
     }
  
     /**
      * @return enum
      */
-    public function getAssociated_element() {
-        return $this->associated_element;
+    public function getAssociatedElement() {
+        return $this->associatedElement;
     }
     
     
