@@ -72,7 +72,7 @@ class Tasks extends AbstractModel {
             return $obj;
         }
         catch (\Exception $ex) {
-            \Logger::warn("Vote with id $id not found");
+             // \Logger::warn("Vote with id $id not found");
         }
  
         return null;
