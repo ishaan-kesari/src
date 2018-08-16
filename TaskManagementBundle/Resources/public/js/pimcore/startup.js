@@ -237,7 +237,7 @@ pimcore.plugin.TaskManagementBundle = Class.create(pimcore.plugin.admin, {
                 {
                     text: t('add_task'),
                     handler:function() {
-                       AddEditTaskForm('Add',[]);
+                       addEditTaskForm('Add',[]);
                     },
                     icon: "/pimcore/static6/img/flat-color-icons/add_row.svg",
                     id: "pimcore_button_add",
@@ -255,13 +255,8 @@ pimcore.plugin.TaskManagementBundle = Class.create(pimcore.plugin.admin, {
                     iconCls: "task_completed_icon",
                     id: "pimcore_button_completed",
                     disabled: true
-                },
-                '->', {
-                    text: t("filter") + "/" + t("search"),
-                    xtype: "tbtext",
-                    style: "margin: 0 10px 0 0;"
-                },
-                this.filterField
+                }                
+              
             ]
         });
              
@@ -278,8 +273,133 @@ pimcore.plugin.TaskManagementBundle = Class.create(pimcore.plugin.admin, {
             }
             return time.join (''); // return adjusted time or original string
         }
-       
-        function AddEditTaskForm(use,taskDetail) {
+        
+        /*
+         * Open view detail on right click on grid
+         */
+        function detail(taskDetail) {
+            
+         var viewField = Ext.create('Ext.form.Panel', {
+                height: 500,
+                width: 700,
+                bodyPadding: 10,
+                defaultType: 'textfield',
+                items: [
+                    {
+                        xtype: 'label',
+                        text: t('subject')+':',
+                        width:700,
+                        style:'padding-right:81px',  
+                        
+                    },{
+                        xtype: 'label',
+                        html: taskDetail['subject']+ "</br>",
+                        width:327
+                        
+                    },{
+                        xtype: 'label',
+                        text: t('description')+':',
+                        width:700,
+                        style:'padding-right:75px',  
+                        
+                    },{
+                        xtype: 'label',
+                        html: taskDetail['description']+ "</br>",
+                        width:327
+                        
+                    }, {
+                        xtype: 'label',
+                        text: t('start_date')+':',
+                        width:700,
+                        style:'padding-right:81px',  
+                        
+                    },{
+                        xtype: 'label',
+                        html : taskDetail['startDate']+ "</br>",
+                        width:327
+                        
+                    }, {
+                        xtype: 'label',
+                        text: t('due_date')+':',
+                        width:700,
+                        style:'padding-right:81px',  
+                        
+                    },{
+                        xtype: 'label',
+                        html : taskDetail['dueDate']+ "</br>",
+                        width:327
+                        
+                    }, {
+                        xtype: 'label',
+                        text: t('completion_date')+':',
+                        width:700,
+                        style:'padding-right:81px',  
+                        
+                    },{
+                        xtype: 'label',
+                        html : taskDetail['completionDate']+ "</br>",
+                        width:327
+                        
+                    },{
+                        xtype: 'label',
+                        text: t('status')+':',
+                        width:700,
+                        style:'padding-right:81px',  
+                    },{
+                        xtype: 'label',
+                        html : taskDetail['status']+ "</br>",
+                        width:327
+                        
+                    }, {
+                        xtype: 'label',
+                        text: t('priority')+':',
+                        width:700,
+                        style:'padding-right:81px',  
+                    },{
+                        xtype: 'label',
+                        html : taskDetail['priority']+ "</br>",
+                        width:327
+                    }, {
+                        xtype: 'label',
+                        text: t('associated_element')+':',
+                        width:700,
+                        style:'padding-right:81px',  
+                    },{
+                        xtype: 'label',
+                        html : taskDetail['associatedElement']+ "</br>",
+                        width:327
+                    }
+                ]
+            });
+            
+             
+            
+            var viewWindow = new Ext.Window({
+                modal:true,
+                title:"View Detail",
+                width:700,
+                height:500,
+                closeAction :'hide',
+                plain       : true,
+                items  : [viewField],
+                buttons: [
+                    {   text: t('close'),
+                        handler : function(grid,rowIndex) {
+                            viewWindow.close();
+                        }
+                    }
+                ]
+                
+            });
+            viewWindow.show();
+        }
+        
+        /*
+         * Add Task Form OR Edit Task Form
+         * 
+         */
+        function addEditTaskForm(use,taskDetail) { 
+            //'use' will be Add or Edit, 'taskDetail' will be empty for add and filled for edit
             if(use == 'Add') {
                 var panelTitle         = "Add Task";
                 var url                = 'save_task';
@@ -302,20 +422,6 @@ pimcore.plugin.TaskManagementBundle = Class.create(pimcore.plugin.admin, {
                 var associatedElement       = taskDetail['associatedElement'];
                 var subject                 = taskDetail['subject'];
             }   
-            
-            var AssociationFields = Ext.define('MyModel', {
-                extend: 'Ext.data.Model',
-                fields: [
-                    {
-                        name: 'id'
-                    },
-                    {
-                        name: 'relationId',
-                        reference: 'Relation',
-                        unique: true
-                    }
-                ]
-            });
             
             var AddTaskForm = Ext.create('Ext.form.Panel', {
                 renderTo: document.body,
@@ -485,20 +591,11 @@ pimcore.plugin.TaskManagementBundle = Class.create(pimcore.plugin.admin, {
                         valueField: 'abbr',
                         value:priority
                     },
-                    {   xtype: 'combo',
+                    {   xtype: 'textfield',
                         labelWidth: 120,
                         allowBlank: false,
                         fieldLabel: t('associated_element'),
                         name: 'associatedElement',
-                        store: [
-                            ['Object', 'Object'],
-                            ['Document', 'Document'],
-                            ['Asset', 'Asset']
-                        ],
-                        fields: ['value', 'text'],
-                        queryMode: 'local',
-                        displayField: 'name',
-                        valueField: 'abbr',
                         width:327,
                         value:associatedElement
                     }
@@ -638,7 +735,7 @@ pimcore.plugin.TaskManagementBundle = Class.create(pimcore.plugin.admin, {
                                             var obj = Ext.decode(response.responseText);
                                             if(obj['success'][0]) {
                                                 var taskDetail = obj['success'][0];
-                                                AddEditTaskForm('Edit',taskDetail);
+                                                addEditTaskForm('Edit',taskDetail);
                                             }
                                         },
                                         failure: function(response, opts) {
@@ -666,13 +763,29 @@ pimcore.plugin.TaskManagementBundle = Class.create(pimcore.plugin.admin, {
                                             console.log('server-side failure with status code ' + response.status);
                                         }
                                     })
-                                }
+                                }.bind(this)
                             },
                             { 
                                 text: t('view'),
-                                icon: '/pimcore/static6/img/flat-color-icons/view.svg',
+                                icon: '/pimcore/static6/img/flat-color-icons/view_details.svg',
                                 handler: function (data,rowIndex) {
-                                    
+                                    Ext.Ajax.request({
+                                        url: '../current_task_detail',
+                                        params: {
+                                            "id" :record.data.id
+                                        },
+                                        method: 'GET',  
+                                        success: function(response, opts) {
+                                            var obj = Ext.decode(response.responseText);
+                                            if(obj['success'][0]) {
+                                                var taskDetail = obj['success'][0];
+                                                detail(taskDetail);
+                                            }
+                                        },
+                                        failure: function(response, opts) {
+                                            console.log('server-side failure with status code' + response.status);
+                                        }
+                                    });
                                 }
                             }
                         ]
