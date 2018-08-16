@@ -21,7 +21,7 @@ pimcore.plugin.TaskManagementBundle = Class.create(pimcore.plugin.admin, {
             var toolbar = pimcore.globalmanager.get("layout_toolbar");
             var action = new Ext.Action({
                 id: "task_management_menu",
-                text: "Task Management",
+                text: t("task_management"),
                 iconCls:"task_management_icon pimcore_menu_mds pimcore_menu_item pimcore_menu_needs_hildren",
                 handler: function() { scope.showTab(); },
             });
@@ -148,7 +148,7 @@ pimcore.plugin.TaskManagementBundle = Class.create(pimcore.plugin.admin, {
         if (!this.panel) {
             this.panel = new Ext.Panel({
                 id:         "task_manager_panel",
-                title:      "Task Manager",
+                title:      t("task_manager"),
                 border:     false,
                 layout:     "fit",
                 closable:   true,
@@ -371,8 +371,7 @@ pimcore.plugin.TaskManagementBundle = Class.create(pimcore.plugin.admin, {
                     }
                 ]
             });
-            
-             
+              
             
             var viewWindow = new Ext.Window({
                 modal:true,
@@ -404,8 +403,13 @@ pimcore.plugin.TaskManagementBundle = Class.create(pimcore.plugin.admin, {
                 var panelTitle         = "Add Task";
                 var url                = 'save_task';
                 var msg                = 'saved';
-                var description = dueDate = priority = status =
-                    startDate = completionDate = associatedElement = '';
+                var description        = '';
+                var dueDate            = '';
+                var priority           = '';
+                var status             = '';
+                var startDate          = '';
+                var completionDate     = '';
+                var associatedElement  = '';
             } else if(use == 'Edit') {
                 var panelTitle = "Edit Task";
                 var url = 'update_task';
@@ -710,7 +714,7 @@ pimcore.plugin.TaskManagementBundle = Class.create(pimcore.plugin.admin, {
             stripeRows: true,
             selModel: this.selectionColumn,
             plugins: ['pimcore.gridfilters'],
-            title: t("Task Manager"),
+            title: t("task_manager"),
             trackMouseOver:false,
             //disableSelection:true,
             region: "center",
