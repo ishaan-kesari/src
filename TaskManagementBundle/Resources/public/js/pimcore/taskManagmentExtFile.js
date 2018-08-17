@@ -6,7 +6,6 @@ pimcore.plugin.taskManagmentExtFile = Class.create({
     * @constructor
     */
     initialize:function (config){
-        
         pimcore.plugin.broker.registerPlugin(this);
         console.log("z");
     },

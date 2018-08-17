@@ -14,7 +14,7 @@ pimcore.plugin.TaskManagementBundle = Class.create(pimcore.plugin.admin, {
         pimcore.plugin.broker.registerPlugin(this);
     },
     pimcoreReady: function (params, broker) {
-        // var taskManagmentExtFile1 = new pimcore.plugin.taskManagmentExtFile();
+        //var taskManagmentExtFile1 = new pimcore.plugin.taskManagmentExtFile();
         //taskManagmentExtFile1.addMenuIntools(this);
         this.addMenuIntools(this);
     },
@@ -59,7 +59,18 @@ pimcore.plugin.TaskManagementBundle = Class.create(pimcore.plugin.admin, {
                 width: 80,
                 xtype: 'timefield'
             });
-
+            
+            this.priorityStore = [
+                ['High', 'High'],
+                ['Normal', 'Normal'],
+                ['Low', 'Low']
+            ];
+            this.statusStore = [
+                ['Not started', 'Not started'],
+                ['In Progress', 'In Progress'],
+                ['Completed', 'Completed']
+            ];
+                  
             var formSearch = this.find.bind(this);
             this.searchpanel = new Ext.FormPanel({
                 region: "east",
