@@ -151,7 +151,7 @@ pimcore.plugin.addMenuInToolsJs = Class.create({
                             typeAhead:true,
                             forceSelection: true,
                             triggerAction: 'all',
-                            store: this.componentStore,
+                            store: this.statusStore,
                             displayField: 'value',
                             valueField: 'key'
                         }]

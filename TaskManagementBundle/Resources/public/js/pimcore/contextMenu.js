@@ -85,86 +85,7 @@ pimcore.plugin.contextMenu = Class.create({
         var position = [e.getX()-10, e.getY()-10];
         e.stopEvent();
         menu_grid.showAt(position);
-         
-        /*
-         * Open view detail on right click on grid
-        */
-        function detail(taskDetail) {
-            var viewField = Ext.create('Ext.form.Panel', {
-                height: 500,
-                width: 700,
-                bodyPadding: 10,
-                defaultType: 'textfield',
-                items: [
-                    {
-                        xtype: 'label',
-                        html : "<h4>"+t('subject')+':&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+taskDetail["subject"]+'</h4>',
-                        width:700,
-                    },{
-                        xtype: 'label',
-                        html: "<h4>"+t('description')+':&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+taskDetail["description"]+'</h4>',
-                        width:700
-                    },{
-                        xtype: 'label',
-                        html:"<h4>"+t('start_date')+':&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+taskDetail["startDate"]+'</h4>',
-                        width:700
-                    },{
-                        xtype: 'label',
-                        html: "<h4>"+t('due_date')+':&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+taskDetail["dueDate"]+'</h4>',
-                        width:700,
-                    },{
-                        xtype: 'label',
-                        html: "<h4>"+t('completion_date')+':&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+taskDetail["completionDate"]+'</h4>',
-                        width:700,
-                    },{
-                        xtype: 'label',
-                        html: "<h4>"+t('status')+':&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+taskDetail["status"]+'</h4>',
-                        width:700
-                    },{
-                        xtype: 'label',
-                        html :"<h4>"+ t('priority')+':&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+taskDetail["priority"]+'</h4>',
-                        width:700
-                    },{
-                        xtype: 'label',
-                        html: "<h4>"+ t('associated_element')+':&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+taskDetail["associatedElement"]+'</h4>',
-                        width:700
-                    }
-                ]
-            });
-              
-            
-            var viewWindow = new Ext.Window({
-                modal:true,
-                title:"View Detail",
-                width:700,
-                height:500,
-                closeAction :'hide',
-                plain       : true,
-                items  : [viewField],
-                buttons: [
-                    {   text: t('close'),
-                        handler : function(viewWindow) { viewWindow.close(); }
-                    }
-                ]
-                
-            });
-            viewWindow.show();
-        }
-       
-        /*
-         * convert 24hrs time to 12hrs
-        */
-        function tConvert (time) {
-            time = time.toString ().match (/^([01]\d|2[0-3])(:)([0-5]\d)(:[0-5]\d)?$/) || [time];
-            time= time.slice(0,time.length-1);
-            if (time.length > 1) { // If time format correct
-              time = time.slice (1);  // Remove full string match value
-              time[5] = +time[0] < 12 ? 'AM' : 'PM'; // Set AM/PM
-              time[0] = +time[0] % 12 || 12; // Adjust hours
-            }
-            return time.join (''); // return adjusted time or original string
-        }
-       
+        
         /*
          * Add Task Form OR Edit Task Form
          * 
@@ -396,6 +317,87 @@ pimcore.plugin.contextMenu = Class.create({
             win.show();
         }
         
+        
+        /*
+         * convert 24hrs time to 12hrs
+        */
+        function tConvert (time) {
+            time = time.toString ().match (/^([01]\d|2[0-3])(:)([0-5]\d)(:[0-5]\d)?$/) || [time];
+            time= time.slice(0,time.length-1);
+            if (time.length > 1) { // If time format correct
+              time = time.slice (1);  // Remove full string match value
+              time[5] = +time[0] < 12 ? 'AM' : 'PM'; // Set AM/PM
+              time[0] = +time[0] % 12 || 12; // Adjust hours
+            }
+            return time.join (''); // return adjusted time or original string
+        }
+       
+       
+        /*
+         * Open view detail on right click on grid
+        */
+        function detail(taskDetail) {
+            var viewField = Ext.create('Ext.form.Panel', {
+                height: 500,
+                width: 700,
+                bodyPadding: 10,
+                defaultType: 'textfield',
+                items: [
+                    {
+                        xtype: 'label',
+                        html : "<h4>"+t('subject')+':&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+taskDetail["subject"]+'</h4>',
+                        width:700,
+                    },{
+                        xtype: 'label',
+                        html: "<h4>"+t('description')+':&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+taskDetail["description"]+'</h4>',
+                        width:700
+                    },{
+                        xtype: 'label',
+                        html:"<h4>"+t('start_date')+':&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+taskDetail["startDate"]+'</h4>',
+                        width:700
+                    },{
+                        xtype: 'label',
+                        html: "<h4>"+t('due_date')+':&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+taskDetail["dueDate"]+'</h4>',
+                        width:700,
+                    },{
+                        xtype: 'label',
+                        html: "<h4>"+t('completion_date')+':&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+taskDetail["completionDate"]+'</h4>',
+                        width:700,
+                    },{
+                        xtype: 'label',
+                        html: "<h4>"+t('status')+':&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+taskDetail["status"]+'</h4>',
+                        width:700
+                    },{
+                        xtype: 'label',
+                        html :"<h4>"+ t('priority')+':&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+taskDetail["priority"]+'</h4>',
+                        width:700
+                    },{
+                        xtype: 'label',
+                        html: "<h4>"+ t('associated_element')+':&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+taskDetail["associatedElement"]+'</h4>',
+                        width:700
+                    }
+                ]
+            });
+              
+            
+            var viewWindow = new Ext.Window({
+                modal:true,
+                title:"View Detail",
+                width:700,
+                height:500,
+                closeAction :'hide',
+                plain       : true,
+                items  : [viewField],
+                buttons: [
+                    {   text: t('close'),
+                        handler : function(viewWindow) { viewWindow.close(); }
+                    }
+                ]
+                
+            });
+            viewWindow.show();
+        }
+       
                     
     },
     

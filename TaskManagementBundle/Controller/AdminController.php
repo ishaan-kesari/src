@@ -27,13 +27,14 @@ class AdminController extends FrontendController
     /**
      * @Route("/task_management__admin_index")
      */
-    public function indexAction(Request $request) {}
+    public function indexAction(Request $request) {
+        
+    }
     
     /**
      * @Route("/save_task")
      */
-    public function saveTask(Request $request)
-    {        
+    public function saveTask(Request $request) {        
         $description       =  $request->get('description');
         $dueDate           =  Carbon::createFromFormat('m/d/y g:ia', $request->get('dueDate')." ".$request->get('dueDateTime'));
         $priority          =  $request->get('priority');
@@ -60,26 +61,23 @@ class AdminController extends FrontendController
     /**
      * @Route("/show_task_listing")
      */
-    public function showAction(Request $request)
-    {
+    public function showAction(Request $request) {
         $start = $request->get('start');
         $limit = $request->get('limit');
         
         $taskListingObj = new Model\Tasks\Listing();
         $taskListingObj->setOffset($start);
         $taskListingObj->setLimit($limit);
-        //$taskListingObj->setCondition('column = 1 AND column2 = 2');
         
         $subject = $request->get('subject');
         $flag = false;
-        if($subject != ""){
+        if($subject != "") {
             $taskListingObj->setCondition('subject = ?',$subject, 'OR');
             $flag =true;
         }
         $fromDate = $request->get('fromDate');
         $fromTime =  $request->get('fromTime');
        
-        
         if ($fromDate != "" && $fromTime =! "") {
              $fromDateTime = $this->parseDateTime($fromDate,$fromTime);
             if ($flag == true){
@@ -135,21 +133,17 @@ class AdminController extends FrontendController
         
         return new Response($response);
        
-
     }
+    
     /**
      * @param string|null $date
      * @param string|null $time
      *
      * @return \DateTime|null
      */
-    private function parseDateTime($date = null, $time = null)
-    {
-        
+    private function parseDateTime($date = null, $time = null) {
        $dateTime = date('Y-m-d H:i:s', strtotime($date." ".$time));
-//p_r($dateTime);
-//die;
-        return $dateTime;
+       return $dateTime;
     }
     
     /**
@@ -244,8 +238,6 @@ class AdminController extends FrontendController
             $taskManagmentObj->setStatus('Completed');
             $taskManagmentObj->save();
         }
-       
         return $this->json(array('success' => 'Status updated to completed'));
-        
     }
 }
