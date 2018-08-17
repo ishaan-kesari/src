@@ -64,28 +64,93 @@ class AdminController extends FrontendController
     {
         $start = $request->get('start');
         $limit = $request->get('limit');
-     
+        
         $taskListingObj = new Model\Tasks\Listing();
         $taskListingObj->setOffset($start);
         $taskListingObj->setLimit($limit);
+        //$taskListingObj->setCondition('column = 1 AND column2 = 2');
+        
+        $subject = $request->get('subject');
+        $flag = false;
+        if($subject != ""){
+            $taskListingObj->setCondition('subject = ?',$subject, 'OR');
+            $flag =true;
+        }
+        $fromDate = $request->get('fromDate');
+        $fromTime =  $request->get('fromTime');
+       
+        
+        if ($fromDate != "" && $fromTime =! "") {
+             $fromDateTime = $this->parseDateTime($fromDate,$fromTime);
+            if ($flag == true){
+                $taskListingObj->addConditionParam('startDate < ?',$fromDateTime,'AND');
+            }
+            else {
+                $taskListingObj->setCondition('startDate < ?',$fromDateTime,'AND');
+                $flag =true;
+            }
+//            $qb->andWhere('timestamp > :fromDate');
+//            $qb->setParameter('fromDate', $fromDate, Type::DATETIME);
+        }
+        $toDate = $request->get('toDate');
+        $toTime =  $request->get('toTime');
+        $toDateTime = $this->parseDateTime($toDate,$toTime);
+        if ($toDate != "" && $toTime =! "") {
+            if ($flag == true){
+                $taskListingObj->addConditionParam('dueDate > ?',$toDateTime,'AND');
+            }
+            else {
+                $taskListingObj->setCondition('dueDate > ?',$toDateTime,'AND');
+                $flag =true;
+            }
+        }
+        $status = $request->get('status');
+        if($status != ""){
+            if ($flag == true){
+                $taskListingObj->addConditionParam('status = ?',$status,'OR');
+            }
+            else {
+                $taskListingObj->setCondition('status = ?',$status,'OR');
+                $flag =true;
+            }
+            
+        }
+        $priority  =  $request->get('priority');
+        if($priority != ""){
+            if ($flag == true){
+                $taskListingObj->addConditionParam('priority = ?',$priority,'OR');
+            }
+            else {
+                $taskListingObj->setCondition('priority = ?',$priority,'OR');
+                $flag =true;
+            }
+        }
+                
         $totalCount = $taskListingObj->count();
         $taskListingData = $taskListingObj->load(); 
-        
-        //p_r($taskListingData);
-        
-       /*return $this->json(["success" => true,
-            'data' => $taskListingData,
-            'total' => $totalCount]); */
-        
-            
-        $response = \GuzzleHttp\json_encode([
-            "success" => true,
+               $response = \GuzzleHttp\json_encode([
+           "success" => true,
             'data' => $taskListingData,
             'total' => $totalCount]);
         
         return new Response($response);
+       
+
     }
-    
+    /**
+     * @param string|null $date
+     * @param string|null $time
+     *
+     * @return \DateTime|null
+     */
+    private function parseDateTime($date = null, $time = null)
+    {
+        
+       $dateTime = date('Y-m-d H:i:s', strtotime($date." ".$time));
+//p_r($dateTime);
+//die;
+        return $dateTime;
+    }
     
     /**
      * Task Detail for specific id
@@ -173,11 +238,11 @@ class AdminController extends FrontendController
     */
     public function completedTask(Request $request) {
         $id= json_decode($request->get('id'));
-        $TaskManagmentObj = new Model\Tasks();
+        $taskManagmentObj = new Model\Tasks();
         for($i=0; $i<sizeof($id);$i++) {
-            $TaskManagmentObj->setId($id[$i]);
-            $TaskManagmentObj->setStatus('Completed');
-            $TaskManagmentObj->save();
+            $taskManagmentObj->setId($id[$i]);
+            $taskManagmentObj->setStatus('Completed');
+            $taskManagmentObj->save();
         }
        
         return $this->json(array('success' => 'Status updated to completed'));
