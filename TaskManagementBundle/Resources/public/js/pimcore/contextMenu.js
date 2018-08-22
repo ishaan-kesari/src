@@ -251,7 +251,7 @@ pimcore.plugin.contextMenu = Class.create({
                             {
                                 xtype     : 'datefield',
                                 name      : 'completionDate',
-                                allowBlank: false,
+                                allowBlank: true,
                                 width     : 100,
                                 listeners : {
                                     render : function(datefield) {
@@ -264,7 +264,7 @@ pimcore.plugin.contextMenu = Class.create({
                                 name: 'completionDateTime',
                                 minValue: '12:00 AM',
                                 maxValue: '11:45 PM',
-                                allowBlank: false,
+                                allowBlank: true,
                                 increment: 15,
                                 width:100,
                                 listeners : {
