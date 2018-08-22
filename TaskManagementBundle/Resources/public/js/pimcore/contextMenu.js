@@ -105,7 +105,51 @@ pimcore.plugin.contextMenu = Class.create({
             var completionDateTime      = tConvert(taskDetail['completionDate'].split(" ")[1]);
             var associatedElement       = taskDetail['associatedElement'];
             var subject                 = taskDetail['subject'];
+            var myId = Ext.id();
+            var associatedField =  new Ext.form.FormPanel({
+                id: myId,
+                type: 'AssociatedElement',
+                forceLayout: true,
+                style: "margin: 10px 0 0 0",
+                bodyStyle: "padding: 10px 30px 10px 30px; min-height:40px;",
 
+                items: [
+                    {
+                        xtype: "textfield",
+                        fieldLabel: t("associated_element"),
+                        name: "associatedElement",
+                        width: 500,
+                        cls: "input_drop_target",
+                        value: associatedElement,
+                        listeners: {
+                            "render": function (el) {
+                                new Ext.dd.DropZone(el.getEl(), {
+                                    reference: this,
+                                    ddGroup: "element",
+                                    getTargetFromEvent: function(e) {
+                                        return this.getEl();
+                                    }.bind(el),
+
+                                    onNodeOver : function(target, dd, e, data) {
+                                        return Ext.dd.DropZone.prototype.dropAllowed;
+                                    },
+
+                                    onNodeDrop : function (target, dd, e, data) {
+                                        var record = data.records[0];
+                                        var data = record.data;
+
+                                        //if (data.type == "object" || data.type == "variant") {
+                                            this.setValue(data.path);
+                                            return true;
+                                       // }
+                                        //return false;
+                                    }.bind(el)
+                                });
+                            }
+                        }
+                    }
+                ]
+            });
             
             var editTaskForm = Ext.create('Ext.form.Panel', {
                 renderTo: document.body,
@@ -268,19 +312,20 @@ pimcore.plugin.contextMenu = Class.create({
                         valueField: 'abbr',
                         value:priority
                     },
-                    {   xtype: 'textfield',
-                        labelWidth: 120,
-                        allowBlank: false,
-                        fieldLabel: t('associated_element'),
-                        name: 'associatedElement',
-                        width:327,
-                        value:associatedElement
-                    }
+//                    {   xtype: 'textfield',
+//                        labelWidth: 120,
+//                        allowBlank: false,
+//                        fieldLabel: t('associated_element'),
+//                        name: 'associatedElement',
+//                        width:327,
+//                        value:associatedElement
+//                    }
+                        associatedField
                 ]
             }); 
             
             var win = new Ext.Window({
-                modal:true,
+                modal:false,
                 title:panelTitle,
                 width:700,
                 height:500,

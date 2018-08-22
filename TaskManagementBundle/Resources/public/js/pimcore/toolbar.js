@@ -10,9 +10,55 @@ pimcore.plugin.toolbar = Class.create({
         return "pimcore.plugin.toolbar";
     },
     addTask: function() {
+
             var panelTitle         = "Add Task";
             var url                = 'save_task';
             var msg                = 'saved';
+            var myId = Ext.id();
+            var associatedField =  new Ext.form.FormPanel({
+                id: myId,
+                type: 'AssociatedElement',
+                forceLayout: true,
+                style: "margin: 10px 0 0 0",
+                bodyStyle: "padding: 10px 30px 10px 30px; min-height:40px;",
+
+                items: [
+                    {
+                        xtype: "textfield",
+                        fieldLabel: t("associated_element"),
+                        name: "associatedElement",
+                        width: 500,
+                        cls: "input_drop_target",
+                        value: "",
+                        listeners: {
+                            "render": function (el) {
+                                new Ext.dd.DropZone(el.getEl(), {
+                                    reference: this,
+                                    ddGroup: "element",
+                                    getTargetFromEvent: function(e) {
+                                        return this.getEl();
+                                    }.bind(el),
+
+                                    onNodeOver : function(target, dd, e, data) {
+                                        return Ext.dd.DropZone.prototype.dropAllowed;
+                                    },
+
+                                    onNodeDrop : function (target, dd, e, data) {
+                                        var record = data.records[0];
+                                        var data = record.data;
+
+                                        //if (data.type == "object" || data.type == "variant") {
+                                            this.setValue(data.path);
+                                            return true;
+                                       // }
+                                        //return false;
+                                    }.bind(el)
+                                });
+                            }
+                        }
+                    }
+                ]
+            });
             var AddTaskForm = Ext.create('Ext.form.Panel', {
                 renderTo: document.body,
                 height: 500,
@@ -47,6 +93,7 @@ pimcore.plugin.toolbar = Class.create({
                                 name      : 'startDate',
                                 width     : 100,
                                 allowBlank: false,
+				value: new Date()
                             },
                             {
                                 xtype: 'timefield',
@@ -55,7 +102,8 @@ pimcore.plugin.toolbar = Class.create({
                                 maxValue: '11:45 PM',
                                 increment: 15,
                                 allowBlank: false,
-                                width:100
+                                width:100,
+				value:'12:00 AM'	
                             }
                         ]
                     },
@@ -92,7 +140,7 @@ pimcore.plugin.toolbar = Class.create({
                             {
                                 xtype     : 'datefield',
                                 name      : 'completionDate',
-                                allowBlank: false,
+                                allowBlank: true,
                                 width     : 100
                             },
                             {
@@ -100,7 +148,7 @@ pimcore.plugin.toolbar = Class.create({
                                 name: 'completionDateTime',
                                 minValue: '12:00 AM',
                                 maxValue: '11:45 PM',
-                                allowBlank: false,
+                                allowBlank: true,
                                 increment: 15,
                                 width:100
                             }
@@ -140,18 +188,14 @@ pimcore.plugin.toolbar = Class.create({
                         allowBlank: false,
                         valueField: 'abbr'
                     },
-                    {   xtype: 'textfield',
-                        labelWidth: 120,
-                        allowBlank: false,
-                        fieldLabel: t('associated_element'),
-                        name: 'associatedElement',
-                        width:327
-                    }
+
+                    associatedField
+
                 ]
             }); 
             
             var win = new Ext.Window({
-                modal:true,
+                modal:false,
                 title:panelTitle,
                 width:700,
                 height:500,
@@ -162,6 +206,7 @@ pimcore.plugin.toolbar = Class.create({
                     {   text: t('save'),
                         handler : function(grid,rowIndex) {
                             var form = AddTaskForm.getForm();
+                            console.log(form.getFieldValues());
                             form.submit({
                                 method  : 'POST',
                                 url:'../'+url, //for Add

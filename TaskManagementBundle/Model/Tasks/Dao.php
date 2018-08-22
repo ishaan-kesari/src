@@ -14,6 +14,7 @@ use Pimcore\Model\Dao\AbstractDao;
 class Dao extends AbstractDao {
  
     //tm_tasks
+    const TABLE_NAME = 'tm_tasks';	
     protected $tableName = 'tm_tasks';
  
     /**

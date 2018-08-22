@@ -34,13 +34,15 @@ class AdminController extends FrontendController
     /**
      * @Route("/save_task")
      */
-    public function saveTask(Request $request) {        
+    public function saveTask(Request $request) { 
         $description       =  $request->get('description');
         $dueDate           =  Carbon::createFromFormat('m/d/y g:ia', $request->get('dueDate')." ".$request->get('dueDateTime'));
         $priority          =  $request->get('priority');
-        $status            =  $request->get('status'); 
+        $status            =  $request->get('status');
         $startDate         =  Carbon::createFromFormat('m/d/y g:ia', $request->get('startDate')." ".$request->get('startDateTime'));
-        $completionDate    =  Carbon::createFromFormat('m/d/y g:ia', $request->get('completionDate')." ".$request->get('completionDateTime'));
+        if($request->get('completionDate') != '' || $request->get('completionDateTime') !='') {  
+            $completionDate    =  Carbon::createFromFormat('m/d/y g:ia', $request->get('completionDate')." ".$request->get('completionDateTime')); 
+        }
         $associatedElement =  $request->get('associatedElement');
         $subject           =  $request->get('subject');
      
@@ -50,7 +52,9 @@ class AdminController extends FrontendController
         $tasksObj->setPriority($priority);
         $tasksObj->setStatus($status);
         $tasksObj->setStartDate($startDate);
-        $tasksObj->setCompletionDate($completionDate);
+        if($request->get('completionDate') != '' || $request->get('completionDateTime') !='') { 
+            $tasksObj->setCompletionDate($completionDate); 
+        }
         $tasksObj->setAssociatedElement($associatedElement);
         $tasksObj->setSubject($subject);
         $tasksObj->save();
@@ -60,6 +64,10 @@ class AdminController extends FrontendController
     
     /**
      * @Route("/show_task_listing")
+     * 
+     * @param Request $request
+     *
+     * @return JsonResponse
      */
     public function showAction(Request $request) {
         $start = $request->get('start');
@@ -87,8 +95,7 @@ class AdminController extends FrontendController
                 $taskListingObj->setCondition('startDate < ?',$fromDateTime,'AND');
                 $flag =true;
             }
-//            $qb->andWhere('timestamp > :fromDate');
-//            $qb->setParameter('fromDate', $fromDate, Type::DATETIME);
+
         }
         $toDate = $request->get('toDate');
         $toTime =  $request->get('toTime');
@@ -103,6 +110,7 @@ class AdminController extends FrontendController
             }
         }
         $status = $request->get('status');
+        
         if($status != ""){
             if ($flag == true){
                 $taskListingObj->addConditionParam('status = ?',$status,'OR');
@@ -150,7 +158,9 @@ class AdminController extends FrontendController
      * Task Detail for specific id
      * 
      * @Route("/current_task_detail")
-     * @return array task detail
+     * @param Request $request
+     *
+     * @return JsonResponse
      * 
     */
     public function currentTaskDetail(Request $request) {
@@ -158,12 +168,7 @@ class AdminController extends FrontendController
         $taskListingObj = new Model\Tasks\Listing();
         $taskListingObj->setCondition("id = ?", $id)->setLimit(1);
         $taskDetail = $taskListingObj->load(); 
-        
-        /*
-        return $this->json([
-            'success'=>$taskDetail
-        ]);*/
-        
+       
         $response = \GuzzleHttp\json_encode([
             'success'=>$taskDetail]);
         
@@ -174,8 +179,10 @@ class AdminController extends FrontendController
     /** 
      * Update Task Detail for specific id
      * 
-     * 
      * @Route("/update_task")
+     * @param Request $request
+     *
+     * @return JsonResponse
      * 
     */
     public function updateTask(Request $request) {
@@ -210,6 +217,9 @@ class AdminController extends FrontendController
      * Delete selected task
      * 
      * @Route("/delete_task")
+     * @param Request $request
+     *
+     * @return JsonResponse
      * 
     */
     public function deleteTask(Request $request) {

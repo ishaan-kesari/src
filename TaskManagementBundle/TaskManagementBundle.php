@@ -6,6 +6,9 @@ use Pimcore\Extension\Bundle\AbstractPimcoreBundle;
 
 class TaskManagementBundle extends AbstractPimcoreBundle
 {
+    /*
+	
+    */	 	
     public function getJsPaths()
     {
         return [
@@ -13,6 +16,7 @@ class TaskManagementBundle extends AbstractPimcoreBundle
             '/bundles/taskmanagement/js/pimcore/addMenuInToolsJs.js',
             '/bundles/taskmanagement/js/pimcore/toolbar.js',
             '/bundles/taskmanagement/js/pimcore/contextMenu.js',
+             '/bundles/taskmanagement/js/pimcore/taskpanel.js',
         ];
     }
 
@@ -21,5 +25,10 @@ class TaskManagementBundle extends AbstractPimcoreBundle
         return [
             '/bundles/taskmanagement/css/style.css'
         ];
+    }
+    
+    public function getInstaller()
+    {
+        return new Installer();
     }
 }
