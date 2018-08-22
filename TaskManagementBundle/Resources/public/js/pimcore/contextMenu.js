@@ -96,13 +96,10 @@ pimcore.plugin.contextMenu = Class.create({
             var msg = 'updated';
             var description             = taskDetail['description'];
             var dueDate                 = taskDetail['dueDate'].split(" ")[0];
-            var dueDateTime             = tConvert(taskDetail['dueDate'].split(" ")[1]);
             var priority                = taskDetail['priority'];
             var status                  = taskDetail['status'];
             var startDate               = taskDetail['startDate'].split(" ")[0];
-            var startDateTime           = tConvert(taskDetail['startDate'].split(" ")[1]);
             var completionDate          = taskDetail['completionDate'].split(" ")[0];
-            var completionDateTime      = tConvert(taskDetail['completionDate'].split(" ")[1]);
             var associatedElement       = taskDetail['associatedElement'];
             var subject                 = taskDetail['subject'];
             var myId = Ext.id();
@@ -110,15 +107,13 @@ pimcore.plugin.contextMenu = Class.create({
                 id: myId,
                 type: 'AssociatedElement',
                 forceLayout: true,
-                style: "margin: 10px 0 0 0",
-                bodyStyle: "padding: 10px 30px 10px 30px; min-height:40px;",
-
                 items: [
                     {
                         xtype: "textfield",
                         fieldLabel: t("associated_element"),
                         name: "associatedElement",
-                        width: 500,
+                        anchor    : '100%',
+                        labelWidth: 120,
                         cls: "input_drop_target",
                         value: associatedElement,
                         listeners: {
@@ -133,16 +128,11 @@ pimcore.plugin.contextMenu = Class.create({
                                     onNodeOver : function(target, dd, e, data) {
                                         return Ext.dd.DropZone.prototype.dropAllowed;
                                     },
-
                                     onNodeDrop : function (target, dd, e, data) {
                                         var record = data.records[0];
                                         var data = record.data;
-
-                                        //if (data.type == "object" || data.type == "variant") {
                                             this.setValue(data.path);
                                             return true;
-                                       // }
-                                        //return false;
                                     }.bind(el)
                                 });
                             }
@@ -185,25 +175,11 @@ pimcore.plugin.contextMenu = Class.create({
                             {
                                 xtype     : 'datefield',
                                 name      : 'startDate',
-                                width     : 100,
+                                width     : 200,
                                 allowBlank: false,
                                 listeners : {
                                     render : function(datefield) {
                                         datefield.setValue(new Date(startDate));
-                                    }
-                                },
-                            },
-                            {
-                                xtype: 'timefield',
-                                name: 'startDateTime',
-                                minValue: '12:00 AM',
-                                maxValue: '11:45 PM',
-                                increment: 15,
-                                allowBlank: false,
-                                width:100,
-                                listeners : {
-                                    render : function(datefield) {
-                                        datefield.setValue(startDateTime);
                                     }
                                 },
                             }
@@ -218,25 +194,11 @@ pimcore.plugin.contextMenu = Class.create({
                             {
                                 xtype     : 'datefield',
                                 name      : 'dueDate',
-                                width     : 100,
+                                width     : 200,
                                 allowBlank: false,
                                 listeners : {
                                     render : function(datefield) {
                                         datefield.setValue(new Date(dueDate));
-                                    }
-                                },
-                            },
-                            {
-                                xtype: 'timefield',
-                                name: 'dueDateTime',
-                                minValue: '12:00 AM',
-                                maxValue: '11:45 PM',
-                                allowBlank: false,
-                                increment: 15,
-                                width:100,
-                                listeners : {
-                                    render : function(datefield) {
-                                        datefield.setValue(dueDateTime);
                                     }
                                 },
                             }
@@ -252,25 +214,11 @@ pimcore.plugin.contextMenu = Class.create({
                                 xtype     : 'datefield',
                                 name      : 'completionDate',
                                 allowBlank: true,
-                                width     : 100,
+                                width     : 200,
                                 listeners : {
                                     render : function(datefield) {
                                         if(completionDate != '0000-00-00')
                                             datefield.setValue(new Date(completionDate));
-                                    }
-                                },
-                            },
-                            {
-                                xtype: 'timefield',
-                                name: 'completionDateTime',
-                                minValue: '12:00 AM',
-                                maxValue: '11:45 PM',
-                                allowBlank: true,
-                                increment: 15,
-                                width:100,
-                                listeners : {
-                                    render : function(datefield) {
-                                        datefield.setValue(completionDateTime);
                                     }
                                 },
                             }
@@ -355,21 +303,6 @@ pimcore.plugin.contextMenu = Class.create({
             win.show();
         }
         
-        
-        /*
-         * convert 24hrs time to 12hrs
-        */
-        function tConvert (time) {
-            time = time.toString ().match (/^([01]\d|2[0-3])(:)([0-5]\d)(:[0-5]\d)?$/) || [time];
-            time= time.slice(0,time.length-1);
-            if (time.length > 1) { // If time format correct
-              time = time.slice (1);  // Remove full string match value
-              time[5] = +time[0] < 12 ? 'AM' : 'PM'; // Set AM/PM
-              time[0] = +time[0] % 12 || 12; // Adjust hours
-            }
-            return time.join (''); // return adjusted time or original string
-        }
-       
        
         /*
          * Open view detail on right click on grid

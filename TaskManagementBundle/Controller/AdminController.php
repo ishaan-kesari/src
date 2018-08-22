@@ -34,14 +34,14 @@ class AdminController extends FrontendController
     /**
      * @Route("/save_task")
      */
-    public function saveTask(Request $request) { 
+    public function saveTask(Request $request) {
         $description       =  $request->get('description');
-        $dueDate           =  Carbon::createFromFormat('m/d/y g:ia', $request->get('dueDate')." ".$request->get('dueDateTime'));
+        $dueDate           =  Carbon::createFromFormat('m/d/y', $request->get('dueDate'));
         $priority          =  $request->get('priority');
         $status            =  $request->get('status');
-        $startDate         =  Carbon::createFromFormat('m/d/y g:ia', $request->get('startDate')." ".$request->get('startDateTime'));
-        if($request->get('completionDate') != '') {  
-            $completionDate    =  Carbon::createFromFormat('m/d/y g:ia', $request->get('completionDate')." ".$request->get('completionDateTime')); 
+        $startDate         =  Carbon::createFromFormat('m/d/y', $request->get('startDate'));
+        if($request->get('completionDate') != '') {
+            $completionDate    =  Carbon::createFromFormat('m/d/y', $request->get('completionDate')); 
         }
         $associatedElement =  $request->get('associatedElement');
         $subject           =  $request->get('subject');
@@ -188,13 +188,12 @@ class AdminController extends FrontendController
     public function updateTask(Request $request) {
         $id                =  $request->get('id');
         $description       =  $request->get('description');
-        $dueDate           =  Carbon::createFromFormat('m/d/y g:ia', $request->get('dueDate')." ".$request->get('dueDateTime'));
+        $dueDate           =  Carbon::createFromFormat('m/d/y', $request->get('dueDate'));
         $priority          =  $request->get('priority');
         $status            =  $request->get('status'); 
-        $startDate         =  Carbon::createFromFormat('m/d/y g:ia', $request->get('startDate')." ".$request->get('startDateTime'));
-        
+        $startDate         =  Carbon::createFromFormat('m/d/y', $request->get('startDate'));
         if($request->get('completionDate') != '' ) {  
-            $completionDate    =  Carbon::createFromFormat('m/d/y g:ia', $request->get('completionDate')." ".$request->get('completionDateTime')); 
+            $completionDate    =  Carbon::createFromFormat('m/d/y', $request->get('completionDate')); 
         }
         $associatedElement =  $request->get('associatedElement');
         $subject           =  $request->get('subject');

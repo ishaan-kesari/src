@@ -42,11 +42,11 @@ class Installer extends AbstractInstaller
             CREATE TABLE `" . Dao::TABLE_NAME . "` (
                 `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `description` text,
-  `dueDate` datetime NOT NULL,
+  `dueDate` date NOT NULL,
   `priority` enum('High','Normal','Low') NOT NULL,
   `status` enum('Not started','In Progress','Completed') NOT NULL,
-  `startDate` datetime NOT NULL,
-  `completionDate` datetime NOT NULL,
+  `startDate` date NOT NULL,
+  `completionDate` date NOT NULL,
   `associatedElement` varchar(255) NOT NULL,
   `subject` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)

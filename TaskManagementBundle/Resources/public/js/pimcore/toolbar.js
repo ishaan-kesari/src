@@ -10,7 +10,7 @@ pimcore.plugin.toolbar = Class.create({
         return "pimcore.plugin.toolbar";
     },
     addTask: function() {
-
+            Ext.getCmp("pimcore_button_add").disable();
             var panelTitle         = "Add Task";
             var url                = 'save_task';
             var msg                = 'saved';
@@ -19,15 +19,13 @@ pimcore.plugin.toolbar = Class.create({
                 id: myId,
                 type: 'AssociatedElement',
                 forceLayout: true,
-                style: "margin: 10px 0 0 0",
-                bodyStyle: "padding: 10px 30px 10px 30px; min-height:40px;",
-
                 items: [
                     {
                         xtype: "textfield",
                         fieldLabel: t("associated_element"),
                         name: "associatedElement",
-                        width: 500,
+                        anchor    : '100%',
+                        labelWidth: 120,
                         cls: "input_drop_target",
                         value: "",
                         listeners: {
@@ -46,12 +44,8 @@ pimcore.plugin.toolbar = Class.create({
                                     onNodeDrop : function (target, dd, e, data) {
                                         var record = data.records[0];
                                         var data = record.data;
-
-                                        //if (data.type == "object" || data.type == "variant") {
                                             this.setValue(data.path);
                                             return true;
-                                       // }
-                                        //return false;
                                     }.bind(el)
                                 });
                             }
@@ -59,7 +53,8 @@ pimcore.plugin.toolbar = Class.create({
                     }
                 ]
             });
-            var AddTaskForm = Ext.create('Ext.form.Panel', {
+            
+           var AddTaskForm = Ext.create('Ext.form.Panel', {
                 renderTo: document.body,
                 height: 500,
                 width: 700,
@@ -91,21 +86,12 @@ pimcore.plugin.toolbar = Class.create({
                             {
                                 xtype     : 'datefield',
                                 name      : 'startDate',
-                                width     : 100,
+                                width     : 200,
                                 allowBlank: false,
 				value: new Date()
-                            },
-                            {
-                                xtype: 'timefield',
-                                name: 'startDateTime',
-                                minValue: '12:00 AM',
-                                maxValue: '11:45 PM',
-                                increment: 15,
-                                allowBlank: false,
-                                width:100,
-				value:'12:00 AM'	
                             }
-                        ]
+                             
+                       ]
                     },
                     {
                         xtype: 'fieldcontainer',
@@ -116,18 +102,9 @@ pimcore.plugin.toolbar = Class.create({
                             {
                                 xtype     : 'datefield',
                                 name      : 'dueDate',
-                                width     : 100,
+                                width     : 200,
                                 allowBlank: false,
                                 
-                            },
-                            {
-                                xtype: 'timefield',
-                                name: 'dueDateTime',
-                                minValue: '12:00 AM',
-                                maxValue: '11:45 PM',
-                                allowBlank: false,
-                                increment: 15,
-                                width:100
                             }
                         ]
                     },
@@ -141,16 +118,7 @@ pimcore.plugin.toolbar = Class.create({
                                 xtype     : 'datefield',
                                 name      : 'completionDate',
                                 allowBlank: true,
-                                width     : 100
-                            },
-                            {
-                                xtype: 'timefield',
-                                name: 'completionDateTime',
-                                minValue: '12:00 AM',
-                                maxValue: '11:45 PM',
-                                allowBlank: true,
-                                increment: 15,
-                                width:100
+                                width     : 200
                             }
                         ]
                     },
@@ -188,7 +156,6 @@ pimcore.plugin.toolbar = Class.create({
                         allowBlank: false,
                         valueField: 'abbr'
                     },
-
                     associatedField
 
                 ]
@@ -199,9 +166,13 @@ pimcore.plugin.toolbar = Class.create({
                 title:panelTitle,
                 width:700,
                 height:500,
-                closeAction :'hide',
                 plain       : true,
                 items  : [AddTaskForm],
+                 listeners : {
+                    'close': function (){
+                        Ext.getCmp("pimcore_button_add").enable();
+                    }
+                },
                 buttons: [
                     {   text: t('save'),
                         handler : function(grid,rowIndex) {
@@ -219,6 +190,7 @@ pimcore.plugin.toolbar = Class.create({
                                     Ext.Msg.alert('Thank You', 'Your task is '+msg, function() {
                                         AddTaskForm.reset();
                                         win.close();
+                                        Ext.getCmp("pimcore_button_add").enable();
                                           
                                     });
                                 }
