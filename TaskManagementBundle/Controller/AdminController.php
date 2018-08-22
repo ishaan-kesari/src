@@ -40,7 +40,7 @@ class AdminController extends FrontendController
         $priority          =  $request->get('priority');
         $status            =  $request->get('status');
         $startDate         =  Carbon::createFromFormat('m/d/y g:ia', $request->get('startDate')." ".$request->get('startDateTime'));
-        if($request->get('completionDate') != '' || $request->get('completionDateTime') !='') {  
+        if($request->get('completionDate') != '') {  
             $completionDate    =  Carbon::createFromFormat('m/d/y g:ia', $request->get('completionDate')." ".$request->get('completionDateTime')); 
         }
         $associatedElement =  $request->get('associatedElement');
@@ -52,7 +52,7 @@ class AdminController extends FrontendController
         $tasksObj->setPriority($priority);
         $tasksObj->setStatus($status);
         $tasksObj->setStartDate($startDate);
-        if($request->get('completionDate') != '' || $request->get('completionDateTime') !='') { 
+        if($request->get('completionDate') != '') { 
             $tasksObj->setCompletionDate($completionDate); 
         }
         $tasksObj->setAssociatedElement($associatedElement);
@@ -192,7 +192,10 @@ class AdminController extends FrontendController
         $priority          =  $request->get('priority');
         $status            =  $request->get('status'); 
         $startDate         =  Carbon::createFromFormat('m/d/y g:ia', $request->get('startDate')." ".$request->get('startDateTime'));
-        $completionDate    =  Carbon::createFromFormat('m/d/y g:ia', $request->get('completionDate')." ".$request->get('completionDateTime'));
+        
+        if($request->get('completionDate') != '' ) {  
+            $completionDate    =  Carbon::createFromFormat('m/d/y g:ia', $request->get('completionDate')." ".$request->get('completionDateTime')); 
+        }
         $associatedElement =  $request->get('associatedElement');
         $subject           =  $request->get('subject');
         
@@ -203,7 +206,9 @@ class AdminController extends FrontendController
         $tasksObj->setPriority($priority);
         $tasksObj->setStatus($status);
         $tasksObj->setStartDate($startDate);
-        $tasksObj->setCompletionDate($completionDate);
+        if($request->get('completionDate') != '' ) {  
+            $tasksObj->setCompletionDate($completionDate);
+        } 
         $tasksObj->setAssociatedElement($associatedElement);
         $tasksObj->setSubject($subject);
         $tasksObj->save();

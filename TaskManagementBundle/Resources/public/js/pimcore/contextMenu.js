@@ -331,7 +331,7 @@ pimcore.plugin.contextMenu = Class.create({
                             var form = editTaskForm.getForm();
                             form.submit({
                                 method  : 'POST',
-                                url:'../'+url, //for update 
+                                url:'../'+url, //for update
                                 params: {
                                     "id" : taskDetail['id']
                                 },
@@ -428,7 +428,7 @@ pimcore.plugin.contextMenu = Class.create({
                 items  : [viewField],
                 buttons: [
                     {   text: t('close'),
-                        handler : function(viewWindow) { viewWindow.close(); }
+                        handler : function() { viewWindow.close(); }
                     }
                 ]
                 
