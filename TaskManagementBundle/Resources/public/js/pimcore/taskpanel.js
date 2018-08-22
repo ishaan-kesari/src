@@ -31,27 +31,18 @@ pimcore.plugin.taskpanel = Class.create({
      getData: function () {
         this.fromDate = new Ext.form.DateField({
                 name: 'start_date',
-                width: 120,
+                width: 200,
                 xtype: 'datefield'
             });
 
-            this.fromTime = new Ext.form.TimeField({
-                name: 'start_time',
-                width: 80,
-                xtype: 'timefield'
-            });
+           
 
             this.toDate = new Ext.form.DateField({
                 name: 'due_date',
-                width: 120,
+                width: 200,
                 xtype: 'datefield'
             });
 
-            this.toTime = new Ext.form.TimeField({
-                name: 'due_time',
-                width: 80,
-                xtype: 'timefield'
-            });
             
             this.priorityStore = [
                 ['High', 'High'],
@@ -106,7 +97,7 @@ pimcore.plugin.taskpanel = Class.create({
                         {
                             xtype:'textfield',
                             name: 'subject',
-                            fieldLabel: t('search'),
+                            fieldLabel: t('subject'),
                             width: 305,
                             listWidth: 150
                         },{
@@ -115,14 +106,14 @@ pimcore.plugin.taskpanel = Class.create({
                             fieldLabel: t('start_date'),
                             combineErrors: true,
                             name: 'start_date',
-                            items: [this.fromDate, this.fromTime]
+                            items: [this.fromDate]
                         },{
                             xtype: 'fieldcontainer',
                             layout: 'hbox',
                             fieldLabel: t('due_date'),
                             combineErrors: true,
                             name: 'due_date',
-                            items: [this.toDate, this.toTime]
+                            items: [this.toDate]
                         },{
                             xtype:'combo',
                             name: 'priority',
@@ -151,8 +142,7 @@ pimcore.plugin.taskpanel = Class.create({
                             valueField: 'key'
                         }]
                 }]});
-        
-        
+                
         if (!this.panel) {
             this.panel = new Ext.Panel({
                 id:         "task_manager_panel",
@@ -175,7 +165,6 @@ pimcore.plugin.taskpanel = Class.create({
 
             this.panel.on("destroy", function () {
                 pimcore.globalmanager.remove("task_manager_panel");
-                this.panel = undefined;
             }.bind(this));
             
             pimcore.layout.refresh();
@@ -200,9 +189,7 @@ pimcore.plugin.taskpanel = Class.create({
     find: function() {
         var formValues = this.searchpanel.getForm().getFieldValues();
         this.searchParams.fromDate = this.fromDate.getValue();
-        this.searchParams.fromTime = this.fromTime.getValue();
         this.searchParams.toDate = this.toDate.getValue();
-        this.searchParams.toTime = this.toTime.getValue();
         this.searchParams.priority = formValues.priority;
         this.searchParams.status = formValues.status;
         this.searchParams.subject = formValues.subject;

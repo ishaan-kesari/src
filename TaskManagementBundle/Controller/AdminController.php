@@ -80,32 +80,29 @@ class AdminController extends FrontendController
         $subject = $request->get('subject');
         $flag = false;
         if($subject != "") {
-            $taskListingObj->setCondition('subject = ?',$subject, 'OR');
+            $taskListingObj->setCondition('subject LIKE ?','%'.$subject.'%', 'AND');
             $flag =true;
         }
         $fromDate = $request->get('fromDate');
-        $fromTime =  $request->get('fromTime');
-       
-        if ($fromDate != "" && $fromTime =! "") {
-             $fromDateTime = $this->parseDateTime($fromDate,$fromTime);
+        if ($fromDate != "") {
+            $fromDate = $this->parseDateTime($fromDate);
             if ($flag == true){
-                $taskListingObj->addConditionParam('startDate < ?',$fromDateTime,'AND');
+                $taskListingObj->addConditionParam('startDate <= ?',$fromDate,'AND');
             }
             else {
-                $taskListingObj->setCondition('startDate < ?',$fromDateTime,'AND');
+                $taskListingObj->setCondition('startDate <= ?',$fromDate,'AND');
                 $flag =true;
             }
 
         }
         $toDate = $request->get('toDate');
-        $toTime =  $request->get('toTime');
-        $toDateTime = $this->parseDateTime($toDate,$toTime);
-        if ($toDate != "" && $toTime =! "") {
+        if ($toDate != "") {
+            $toDate = $this->parseDateTime($toDate);
             if ($flag == true){
-                $taskListingObj->addConditionParam('dueDate > ?',$toDateTime,'AND');
+                $taskListingObj->addConditionParam('dueDate > ?',$toDate,'AND');
             }
             else {
-                $taskListingObj->setCondition('dueDate > ?',$toDateTime,'AND');
+                $taskListingObj->setCondition('dueDate > ?',$toDate,'AND');
                 $flag =true;
             }
         }
@@ -113,10 +110,10 @@ class AdminController extends FrontendController
         
         if($status != ""){
             if ($flag == true){
-                $taskListingObj->addConditionParam('status = ?',$status,'OR');
+                $taskListingObj->addConditionParam('status = ?',$status,'AND');
             }
             else {
-                $taskListingObj->setCondition('status = ?',$status,'OR');
+                $taskListingObj->setCondition('status = ?',$status,'AND');
                 $flag =true;
             }
             
@@ -124,10 +121,10 @@ class AdminController extends FrontendController
         $priority  =  $request->get('priority');
         if($priority != ""){
             if ($flag == true){
-                $taskListingObj->addConditionParam('priority = ?',$priority,'OR');
+                $taskListingObj->addConditionParam('priority = ?',$priority,'AND');
             }
             else {
-                $taskListingObj->setCondition('priority = ?',$priority,'OR');
+                $taskListingObj->setCondition('priority = ?',$priority,'AND');
                 $flag =true;
             }
         }
@@ -143,7 +140,8 @@ class AdminController extends FrontendController
        
     }
     
-    /**
+
+ /**
      * @param string|null $date
      * @param string|null $time
      *
