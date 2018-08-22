@@ -255,7 +255,8 @@ pimcore.plugin.contextMenu = Class.create({
                                 width     : 100,
                                 listeners : {
                                     render : function(datefield) {
-                                        datefield.setValue(new Date(completionDate));
+                                        if(completionDate != '0000-00-00')
+                                            datefield.setValue(new Date(completionDate));
                                     }
                                 },
                             },
@@ -312,15 +313,7 @@ pimcore.plugin.contextMenu = Class.create({
                         valueField: 'abbr',
                         value:priority
                     },
-//                    {   xtype: 'textfield',
-//                        labelWidth: 120,
-//                        allowBlank: false,
-//                        fieldLabel: t('associated_element'),
-//                        name: 'associatedElement',
-//                        width:327,
-//                        value:associatedElement
-//                    }
-                        associatedField
+                    associatedField
                 ]
             }); 
             
