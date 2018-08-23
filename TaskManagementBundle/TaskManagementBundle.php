@@ -17,6 +17,7 @@ class TaskManagementBundle extends AbstractPimcoreBundle
             '/bundles/taskmanagement/js/pimcore/toolbar.js',
             '/bundles/taskmanagement/js/pimcore/contextMenu.js',
              '/bundles/taskmanagement/js/pimcore/taskpanel.js',
+            '/bundles/taskmanagement/js/pimcore/portlets/taskportlet.js',
         ];
     }
 

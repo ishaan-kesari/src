@@ -252,4 +252,20 @@ class AdminController extends FrontendController
         }
         return $this->json(array('success' => 'Status updated to completed'));
     }
+    
+    /**
+     * @Route("/task_portlet");
+     * @param Request $request
+     */
+    public function portletList(Request $request) {
+       $taskListingObj = new Model\Tasks\Listing();
+       $taskListingObj->setOrder('DESC');
+       $taskListingObj->setLimit(10);
+       $taskListingData = $taskListingObj->load(); 
+               $response = \GuzzleHttp\json_encode([
+                      'data' => $taskListingData]
+           );
+        
+        return new Response($response);
+    }
 }
