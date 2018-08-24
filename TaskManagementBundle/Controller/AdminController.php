@@ -290,13 +290,11 @@ class AdminController extends FrontendController
      * @param Request $request
      */
     public function settingsSave(Request $request) {
-        $a = "task_management_homepage:
-    path:     /
-    defaults: { _controller: TaskManagementBundle:Default:index }";
+        $data = $request->get("data");
+       
+        $path = TASK_SETTING_YML_FILE_PATH;
         
-        $path = '../src/TaskManagementBundle/test1.yml';
-        
-        File::put($path, $a);
+        File::put($path, $data);
         return $this->json(array('success' => 'Settings Saved'));
     }
 }

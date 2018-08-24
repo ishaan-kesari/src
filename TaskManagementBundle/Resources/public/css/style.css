@@ -8,8 +8,5 @@
 
 .backColor{
     background-color: #222;
-}
-
-.x-menu-item-text-default {
-    color:#fff;
+    color:white !important;
 }
