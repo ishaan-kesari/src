@@ -29,7 +29,7 @@ pimcore.plugin.addMenuInToolsJs = Class.create({
                             text: t("listing"),
                             id: "task_management_menu",
                             icon: '/pimcore/static6/img/flat-color-icons/list.svg',
-                            cls:'backColor ',
+                            cls:'backColor',
                             handler: function() {
                                new pimcore.plugin.addMenuInToolsJs().showTab();
                             },
@@ -37,7 +37,7 @@ pimcore.plugin.addMenuInToolsJs = Class.create({
                             text: t("settings"),
                             id:"task_management_setting",
                             icon: '/pimcore/static6/img/flat-color-icons/settings.svg',
-                            cls:'backColor ',
+                            cls:'backColor',
                             handler: function() {
                                 new pimcore.plugin.addMenuInToolsJs().showSettings();
                             },

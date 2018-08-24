@@ -8,5 +8,9 @@
 
 .backColor{
     background-color: #222;
-    color:white !important;
+}
+
+#task_management_menu-textEl,#task_management_setting-textEl {
+    color:white; 
+    
 }
