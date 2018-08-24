@@ -5,3 +5,11 @@
 .task_completed_icon {
     background: url(../img/task_completed.svg) center center no-repeat !important;
 }
+
+.backColor{
+    background-color: #222;
+}
+
+.x-menu-item-text-default {
+    color:#fff;
+}

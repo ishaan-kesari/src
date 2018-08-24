@@ -19,15 +19,33 @@ pimcore.plugin.addMenuInToolsJs = Class.create({
         var user = pimcore.globalmanager.get("user");
         if (user.admin == true ) {
             var toolbar = pimcore.globalmanager.get("layout_toolbar");
+            
             var action = new Ext.Action({
-                id: "task_management_menu",
                 text: t("task_management"),
-                iconCls:"task_management_icon pimcore_menu_mds pimcore_menu_item pimcore_menu_needs_hildren",
-                handler: function() {
-                    var addMenuInToolsJs = new pimcore.plugin.addMenuInToolsJs();
-                    addMenuInToolsJs.showTab();
-                },
+                iconCls: "task_management_icon pimcore_menu_mds pimcore_menu_item pimcore_menu_needs_hildren ",
+                menu: {
+                    xtype: 'menu',                         
+                    items: [{
+                            text: t("listing"),
+                            id: "task_management_menu",
+                            icon: '/pimcore/static6/img/flat-color-icons/list.svg',
+                            cls:'backColor',
+                            handler: function() {
+                               new pimcore.plugin.addMenuInToolsJs().showTab();
+                            },
+                        },{
+                            text: t("settings"),
+                            id:"task_management_setting",
+                            icon: '/pimcore/static6/img/flat-color-icons/settings.svg',
+                            cls:'backColor',
+                            handler: function() {
+                                new pimcore.plugin.addMenuInToolsJs().showSettings();
+                            },
+                        }
+                    ]
+                }
             });
+            
             toolbar.extrasMenu.add(action);
             pimcore.helpers.initMenuTooltips();
         } else {
@@ -36,12 +54,18 @@ pimcore.plugin.addMenuInToolsJs = Class.create({
     },
     showTab: function() {
         if (!Ext.getCmp("task_manager_panel")) {
-            var dataCon = new pimcore.plugin.taskpanel();
+            new pimcore.plugin.taskpanel();
         } else {
             Ext.getCmp("pimcore_panel_tabs").setActiveItem("task_manager_panel");
         }
-         
     },
+    showSettings: function() {
+        if (!Ext.getCmp("task_management_settings")) {
+            new pimcore.plugin.taskSettings();
+        } else {
+            Ext.getCmp("pimcore_panel_tabs").setActiveItem("task_management_settings");
+        }
+    }
    
 });
 

@@ -275,6 +275,7 @@ pimcore.plugin.contextMenu = Class.create({
                 items  : [editTaskForm],
                 buttons: [
                     {   text: t('save'),
+                        iconCls: "pimcore_icon_save",
                         handler : function(grid,rowIndex) {
                             var form = editTaskForm.getForm();
                             form.submit({
@@ -370,7 +371,7 @@ pimcore.plugin.contextMenu = Class.create({
         }
        
                     
-    },
+    }
     
     
     
