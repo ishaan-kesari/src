@@ -92,7 +92,7 @@ pimcore.plugin.contextMenu = Class.create({
          */
         function editTaskFormFn(taskDetail) {
             var panelTitle = "Edit Task";
-            var url = 'update_task';
+            var url = 'admin/update_task';
             var msg = 'updated';
             var description             = taskDetail['description'];
             var dueDate                 = taskDetail['dueDate'].split(" ")[0];

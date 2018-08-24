@@ -45,7 +45,7 @@ class Dao extends AbstractDao {
         $buffer = [];
  
         $validColumns = $this->getValidTableColumns($this->tableName); 
-        
+
         if(count($vars))
             foreach ($vars as $k => $v) {
                 

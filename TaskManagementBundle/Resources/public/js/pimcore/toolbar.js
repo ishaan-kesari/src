@@ -12,7 +12,7 @@ pimcore.plugin.toolbar = Class.create({
     addTask: function() {
             Ext.getCmp("pimcore_button_add").disable();
             var panelTitle         = "Add Task";
-            var url                = 'save_task';
+            var url                = 'admin/save_task';
             var msg                = 'saved';
             var myId = Ext.id();
             var associatedField =  new Ext.form.FormPanel({
@@ -177,7 +177,7 @@ pimcore.plugin.toolbar = Class.create({
                     {   text: t('save'),
                         handler : function(grid,rowIndex) {
                             var form = AddTaskForm.getForm();
-                            console.log(form.getFieldValues());
+                            //console.log(form.getFieldValues());
                             form.submit({
                                 method  : 'POST',
                                 url:'../'+url, //for Add

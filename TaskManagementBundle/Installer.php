@@ -16,6 +16,7 @@ namespace TaskManagementBundle;
 use TaskManagementBundle\Model\Tasks\Dao;
 use Pimcore\Db;
 use Pimcore\Extension\Bundle\Installer\AbstractInstaller;
+use \Pimcore\Model\User\Permission\Definition;
 
 class Installer extends AbstractInstaller
 {
@@ -36,25 +37,33 @@ class Installer extends AbstractInstaller
 
     public function install()
     {
+        
+        $permissionDefinition = new Definition();
+        $permissionDefinition->setKey("task_management");
+        $permissionDefinition->save();
         $db = Db::get();
 
         $db->query("
             CREATE TABLE `" . Dao::TABLE_NAME . "` (
                 `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `description` text,
-  `dueDate` date NOT NULL,
-  `priority` enum('High','Normal','Low') NOT NULL,
-  `status` enum('Not started','In Progress','Completed') NOT NULL,
-  `startDate` date NOT NULL,
-  `completionDate` date NOT NULL,
-  `associatedElement` varchar(255) NOT NULL,
-  `subject` varchar(255) NOT NULL,
-  PRIMARY KEY (`id`)
-            )
-            COLLATE='utf8_general_ci'
-            ENGINE=InnoDB
-            AUTO_INCREMENT=0;
+                `subject` varchar(255) NOT NULL,
+                `description` text,
+                `dueDate` date NOT NULL,
+                `priority` enum('High','Normal','Low') NOT NULL,
+                `status` enum('Not started','In Progress','Completed') NOT NULL,
+                `startDate` date NOT NULL,
+                `completionDate` date NOT NULL,
+                `associatedElement` varchar(255) NOT NULL,
+                `userOwner` int(11) unsigned NOT NULL,
+                
+                PRIMARY KEY (`id`)
+                          )
+                          COLLATE='utf8_general_ci'
+                          ENGINE=InnoDB
+                          AUTO_INCREMENT=0;
         ")->closeCursor();
+        
+    
     }
 
     public function canBeUninstalled()

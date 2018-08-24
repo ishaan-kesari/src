@@ -17,7 +17,7 @@ pimcore.plugin.addMenuInToolsJs = Class.create({
     },
     addMenuInTools: function () {
         var user = pimcore.globalmanager.get("user");
-        if (user.admin == true ) {
+        if (user.isAllowed("task_management") ) {
             var toolbar = pimcore.globalmanager.get("layout_toolbar");
             var action = new Ext.Action({
                 id: "task_management_menu",

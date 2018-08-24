@@ -58,6 +58,10 @@ class Tasks extends AbstractModel {
     */
     public $subject;
     
+    /**
+     * @var int
+    */
+    public $userOwner;
     
     /**
      * get score by id
@@ -109,7 +113,7 @@ class Tasks extends AbstractModel {
     
     
     /**
-     * @param $due_date
+     * @param $dueDate
      */
     public function setDueDate($dueDate) {
         $this->dueDate = $dueDate;
@@ -154,14 +158,14 @@ class Tasks extends AbstractModel {
     
     
     /**
-     * @param $start_date
+     * @param $startDate
      */
     public function setStartDate($startDate) {
         $this->startDate = $startDate;
     }
  
     /**
-     * @return datetime
+     * @return date
      */
     public function getStartDate() {
         return $this->startDate;
@@ -169,14 +173,14 @@ class Tasks extends AbstractModel {
     
     
     /**
-     * @param $completion_date
+     * @param $completionDate
      */
     public function setCompletionDate($completionDate) {
         $this->completionDate = $completionDate;
     }
  
     /**
-     * @return datetime
+     * @return date
      */
     public function getCompletionDate() {
         return $this->completionDate;
@@ -184,7 +188,7 @@ class Tasks extends AbstractModel {
     
     
     /**
-     * @param $associated_element
+     * @param $associatedElement
      */
     public function setAssociatedElement($associatedElement) {
         $this->associatedElement = $associatedElement;
@@ -210,6 +214,19 @@ class Tasks extends AbstractModel {
      */
     public function getSubject() {
         return $this->subject;
+    }
+    /**
+     * @param $userOwner
+     */
+    public function setUserOwner($userOwner) {
+        $this->userOwner = $userOwner;
+    }
+ 
+    /**
+     * @return int(11)
+     */
+    public function getUserOwner() {
+        return $this->userOwner;
     }
     
 }
