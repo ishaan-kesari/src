@@ -291,6 +291,8 @@ class AdminController extends FrontendController
      */
     public function settingsSave(Request $request) {
         $data = $request->get("data");
+            $data =   str_replace("&","
+         ",$data);
         $path = TASK_SETTING_YML_FILE_PATH;
         File::put($path, $data);
         return $this->json(array('success' => 'Settings Saved'));

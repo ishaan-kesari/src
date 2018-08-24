@@ -109,15 +109,15 @@ pimcore.plugin.taskSettings = Class.create({
         return this.panel;
     },save:function() {
         var notificationStatus =  Ext.getCmp("notification").getValue();
-        var ymldata = "Notification:"+notificationStatus;
+        var ymldata = "Notification:"+notificationStatus+"&";
         if(notificationStatus == false) {
         
         } else if(notificationStatus == true){
            var notificationFrequency = Ext.getCmp("notificationFrequencyId").getValue();
             if(notificationFrequency == 1) {
-               ymldata = ymldata+"1:true";
+               ymldata = ymldata+"1:true&2:false";
             } else if(notificationFrequency == 2) {
-               ymldata = ymldata+"2:false";
+               ymldata = ymldata+"1:false&2:true&";
             }
         }
         
