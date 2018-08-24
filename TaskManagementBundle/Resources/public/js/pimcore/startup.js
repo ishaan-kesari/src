@@ -8,9 +8,17 @@ pimcore.plugin.TaskManagementBundle = Class.create(pimcore.plugin.admin, {
         pimcore.plugin.broker.registerPlugin(this);
     },
     pimcoreReady: function (params, broker) {
-        var addMenuInToolsJs = new pimcore.plugin.addMenuInToolsJs();
-        addMenuInToolsJs.addMenuInTools(this);
-    }
+        var user = pimcore.globalmanager.get("user");
+        
+        if (user.isAllowed("task_management") ) {
+            
+        //if (pimcore.globalmanager.get("user").isAllowed("task_management")) {
+            var addMenuInToolsJs = new pimcore.plugin.addMenuInToolsJs();
+            addMenuInToolsJs.addMenuInTools(this);
+       // }
+        }
+ 
+    },
     
 });
 

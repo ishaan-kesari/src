@@ -33,9 +33,15 @@ class AdminController extends FrontendController
     }
     
     /**
-     * @Route("/save_task")
+     * @Route("/admin/save_task")
      */
     public function saveTask(Request $request) {
+        $userId = 0;
+        $user = \Pimcore\Tool\Admin::getCurrentUser();
+        if ($user) {
+         $userId = $user->getId();
+        }
+     
         $description       =  $request->get('description');
         $dueDate           =  Carbon::createFromFormat('m/d/y', $request->get('dueDate'));
         $priority          =  $request->get('priority');
@@ -58,6 +64,7 @@ class AdminController extends FrontendController
         }
         $tasksObj->setAssociatedElement($associatedElement);
         $tasksObj->setSubject($subject);
+        $tasksObj->setUserOwner($userId);
         $tasksObj->save();
     
         return $this->json(array('success' => 'TaskAdded'));
@@ -178,13 +185,18 @@ class AdminController extends FrontendController
     /** 
      * Update Task Detail for specific id
      * 
-     * @Route("/update_task")
+     * @Route("/admin/update_task")
      * @param Request $request
      *
      * @return JsonResponse
      * 
     */
     public function updateTask(Request $request) {
+        $userId = 0;
+        $user = \Pimcore\Tool\Admin::getCurrentUser();
+        if ($user) {
+         $userId = $user->getId();
+        }
         $id                =  $request->get('id');
         $description       =  $request->get('description');
         $dueDate           =  Carbon::createFromFormat('m/d/y', $request->get('dueDate'));
@@ -209,6 +221,7 @@ class AdminController extends FrontendController
         } 
         $tasksObj->setAssociatedElement($associatedElement);
         $tasksObj->setSubject($subject);
+        $tasksObj->setUserOwner($userId);
         $tasksObj->save();
     
         return $this->json(array('success' => 'updated'));
@@ -259,7 +272,9 @@ class AdminController extends FrontendController
      * @param Request $request
      */
     public function portletList(Request $request) {
+        $status  = "Completed";
        $taskListingObj = new Model\Tasks\Listing();
+       $taskListingObj->addConditionParam("status != ?",$status, 'AND');
        $taskListingObj->setOrder('DESC');
        $taskListingObj->setLimit(10);
        $taskListingData = $taskListingObj->load(); 

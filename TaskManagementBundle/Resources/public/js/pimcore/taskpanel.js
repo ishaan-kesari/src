@@ -257,7 +257,7 @@ pimcore.plugin.taskpanel = Class.create({
                 }
             },
             fields:  [
-                'id', 'subject', 'description', 'dueDate', 'priority', 'status', 'startDate', 'completionDate', 'associatedElement'
+                'id', 'subject', 'description', 'dueDate', 'priority', 'status', 'startDate', 'completionDate', 'associatedElement', 'userOwner'
             ],
             baseParams:{
                 showOpt: 1,

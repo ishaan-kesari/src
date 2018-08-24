@@ -12,7 +12,7 @@ pimcore.plugin.toolbar = Class.create({
     addTask: function() {
             Ext.getCmp("pimcore_button_add").disable();
             var panelTitle         = "Add Task";
-            var url                = 'save_task';
+            var url                = 'admin/save_task';
             var msg                = 'saved';
             var myId = Ext.id();
             var associatedField =  new Ext.form.FormPanel({
