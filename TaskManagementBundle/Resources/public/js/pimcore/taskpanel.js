@@ -1,14 +1,3 @@
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 pimcore.registerNS("pimcore.plugin.taskpanel");
 
 pimcore.plugin.taskpanel = Class.create({
@@ -25,7 +14,7 @@ pimcore.plugin.taskpanel = Class.create({
     },
     
     activate: function () {
-        var tabPanel = Ext.getCmp("pimcore_panel_tabs");
+        Ext.getCmp("pimcore_panel_tabs");
     },
     
      getData: function () {
@@ -35,20 +24,18 @@ pimcore.plugin.taskpanel = Class.create({
                 xtype: 'datefield'
             });
 
-           
-
             this.toDate = new Ext.form.DateField({
                 name: 'due_date',
                 width: 200,
                 xtype: 'datefield'
             });
-
             
             this.priorityStore = [
                 ['High', 'High'],
                 ['Normal', 'Normal'],
                 ['Low', 'Low']
             ];
+            
             this.statusStore = [
                 ['Not started', 'Not started'],
                 ['In Progress', 'In Progress'],
@@ -150,6 +137,7 @@ pimcore.plugin.taskpanel = Class.create({
                 border:     false,
                 layout:     "fit",
                 closable:   true,
+                iconCls: "task_management_icon"
             });
              
             var layout = new Ext.Panel({
@@ -162,7 +150,6 @@ pimcore.plugin.taskpanel = Class.create({
             var tabPanel = Ext.getCmp("pimcore_panel_tabs");
             tabPanel.add(this.panel);
             tabPanel.setActiveItem("task_manager_panel");
-
             this.panel.on("destroy", function () {
                 pimcore.globalmanager.remove("task_manager_panel");
             }.bind(this));

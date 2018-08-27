@@ -14,6 +14,8 @@ use Symfony\Component\HttpFoundation\Response;
 use TaskManagementBundle\Model;
 use \Pimcore\Model\DataObject;
 use Carbon\Carbon;
+use Pimcore\File;
+use Pimcore\Mail;
 
 /* 
  * Task Backend Controller
@@ -154,8 +156,8 @@ class AdminController extends FrontendController
      *
      * @return \DateTime|null
      */
-    private function parseDateTime($date = null, $time = null) {
-       $dateTime = date('Y-m-d H:i:s', strtotime($date." ".$time));
+    private function parseDateTime($date = null) {
+       $dateTime = date('Y-m-d', strtotime($date));
        return $dateTime;
     }
     
@@ -282,5 +284,19 @@ class AdminController extends FrontendController
            );
         
         return new Response($response);
+    }
+    
+    /**
+     * @Route("/settings_save");
+     * @param Request $request
+     */
+    public function settingsSave(Request $request) {
+        $data = $request->get("data");
+            $data =   str_replace("&","
+         ",$data);
+        $path = TASK_SETTING_YML_FILE_PATH;
+        File::put($path, $data);
+         
+        return $this->json(array('success' => 'Settings Saved'));
     }
 }

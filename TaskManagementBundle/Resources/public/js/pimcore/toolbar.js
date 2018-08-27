@@ -173,14 +173,14 @@ pimcore.plugin.toolbar = Class.create({
                         Ext.getCmp("pimcore_button_add").enable();
                     }
                 },
-                buttons: [
+                buttons: [  
                     {   text: t('save'),
+                        iconCls: "pimcore_icon_save",
                         handler : function(grid,rowIndex) {
                             var form = AddTaskForm.getForm();
-                            //console.log(form.getFieldValues());
                             form.submit({
                                 method  : 'POST',
-                                url:'../'+url, //for Add
+                                url:'../'+url, //for AddTask
                                 success : function() {
                                     Ext.getCmp('mygrid').getStore().load({
                                         params: {
@@ -191,7 +191,6 @@ pimcore.plugin.toolbar = Class.create({
                                         AddTaskForm.reset();
                                         win.close();
                                         Ext.getCmp("pimcore_button_add").enable();
-                                          
                                     });
                                 }
                             });
@@ -244,7 +243,7 @@ pimcore.plugin.toolbar = Class.create({
                 "id": Ext.encode(id)
             },
             method: 'GET',  
-            success: function(response, opts) {
+            success: function() {
                  Ext.getCmp('mygrid').getStore().load({
                     data: JSON.stringify({})
                 }); 
