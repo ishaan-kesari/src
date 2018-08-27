@@ -16,8 +16,12 @@ pimcore.plugin.taskpanel = Class.create({
     activate: function () {
         Ext.getCmp("pimcore_panel_tabs");
     },
-    
-     getData: function () {
+    /**
+     *  Action button, task listing panel and advance search panel
+     *  
+     * @returns {Ext.Panel}
+     */
+    getData: function () {
         this.fromDate = new Ext.form.DateField({
                 name: 'start_date',
                 width: 200,
@@ -43,6 +47,7 @@ pimcore.plugin.taskpanel = Class.create({
             ];
                   
             var formSearch = this.find.bind(this);
+            // Advance seach form panel
             this.searchpanel = new Ext.FormPanel({
                 region: "east",
                 title: t("task_search_form"),
@@ -159,12 +164,11 @@ pimcore.plugin.taskpanel = Class.create({
     
         return this.panel;
     },
+    // Reset form
     clearValues: function(){
         this.searchpanel.getForm().reset();
         this.searchParams.fromDate = null;
-        this.searchParams.fromTime = null;
         this.searchParams.toDate = null;
-        this.searchParams.toTime = null;
         this.searchParams.priority = null;
         this.searchParams.status = null;
         this.searchParams.subject = null;
@@ -173,6 +177,7 @@ pimcore.plugin.taskpanel = Class.create({
             params:this.searchParams
         });
     },
+    // Advance search 
     find: function() {
         var formValues = this.searchpanel.getForm().getFieldValues();
         this.searchParams.fromDate = this.fromDate.getValue();
@@ -186,24 +191,9 @@ pimcore.plugin.taskpanel = Class.create({
         this.store.load();
        // this.pagingToolbar.moveFirst();
     },
+    // List panle grid
     getGrid: function () {
-       /* this.filterField = new Ext.form.TextField({
-            xtype: "textfield",
-            width: 200,
-            style: "margin: 0 10px 0 0;",
-            enableKeyEvents: true,
-            listeners: {
-                "keydown": function (field, key) {
-                    if (key.getKey() == key.ENTER) {
-                        var input = field;
-                        var proxy = this.store.getProxy();
-                        proxy.extraParams.filterFullText = input.getValue();
-                        this.store.load();
-                    }
-                }.bind(this)
-            }
-        });*/
-        
+         
         var typesColumns = [
             {text: t("subject"), width: 50, sortable: true, dataIndex: 'subject'},
             {text: t("description"), flex: 200, sortable: true, dataIndex: 'description', filter: 'string'},
@@ -216,6 +206,7 @@ pimcore.plugin.taskpanel = Class.create({
         ];
         
         var toolbarObj = new pimcore.plugin.toolbar();
+        // Panel toolbar
         var toolbar = Ext.create('Ext.Toolbar', {
             cls: 'main-toolbar',
             items: [
@@ -242,9 +233,10 @@ pimcore.plugin.taskpanel = Class.create({
               
             ]
         });
-        
+        //Checkbox
         this.selectionColumn = new Ext.selection.CheckboxModel();
         this.selectionColumn.on("selectionchange", toolbarObj.buttonStates.bind(this));
+        // Store for task data listing
         this.store = new Ext.data.JsonStore({
             totalProperty: 'total',
             pageSize: 10,
@@ -303,7 +295,7 @@ pimcore.plugin.taskpanel = Class.create({
                 }.bind(this)
             }
         }));
-      
+        // Main grid
         this.grid = new Ext.grid.GridPanel({
             frame: false,
             autoScroll: true,

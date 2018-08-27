@@ -6,6 +6,7 @@ pimcore.plugin.contextMenu = Class.create({
     * @constructor
     */
     initialize:function(){},
+    
     getClassName: function () {
         return "pimcore.plugin.contextMenu";
     },
@@ -103,6 +104,8 @@ pimcore.plugin.contextMenu = Class.create({
             var associatedElement       = taskDetail['associatedElement'];
             var subject                 = taskDetail['subject'];
             var myId = Ext.id();
+            // Associated field text field with drag and drap
+            //  Object, Assets and documents
             var associatedField =  new Ext.form.FormPanel({
                 id: myId,
                 type: 'AssociatedElement',

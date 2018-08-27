@@ -6,9 +6,14 @@ pimcore.plugin.toolbar = Class.create({
     */
     initialize:function () {
     },
+    
     getClassName: function () {
         return "pimcore.plugin.toolbar";
     },
+    /**
+     * Add task form and sumbit handler
+     * @returns {undefined}
+     */
     addTask: function() {
             Ext.getCmp("pimcore_button_add").disable();
             var panelTitle         = "Add Task";
@@ -200,6 +205,7 @@ pimcore.plugin.toolbar = Class.create({
             });
             win.show();
     },
+    // delete selected row
     deleteSelected: function(data, rowNumber) {
         var grid = data.up('gridpanel');
         var arraySelected =grid.getSelectionModel().getSelection();
@@ -228,6 +234,7 @@ pimcore.plugin.toolbar = Class.create({
             }
         }); 
     },
+    // Change status as completed.
     completedStatusUpdate : function(data, rowNumber) {
         var grid = data.up('gridpanel');
         var arraySelected = grid.getSelectionModel().getSelection();
@@ -254,6 +261,7 @@ pimcore.plugin.toolbar = Class.create({
             }
         }); 
     },
+    // Action status of buttons of main panel.
     buttonStates: function() {
         var selectedRows = this.grid.getSelectionModel().getSelection();
         if (selectedRows.length >= 1) {

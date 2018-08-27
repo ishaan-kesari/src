@@ -1,8 +1,16 @@
 <?php
- /*
-  * TaskManagementBundle
-  * 
-  */
+/**
+ * Pimcore
+ *
+ * This source file is available under two different licenses:
+ * - GNU General Public License version 3 (GPLv3)
+ * - Pimcore Enterprise License (PEL)
+ * Full copyright and license information is available in
+ * LICENSE.md which is distributed with this source code.
+ *
+ * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ * @license    http://www.pimcore.org/license     GPLv3 and PEL
+ */
 namespace TaskManagementBundle\Model;
  
 use Pimcore\Model\AbstractModel;
@@ -23,7 +31,7 @@ class Tasks extends AbstractModel {
     public $description;
  
     /**
-     * @var datetime
+     * @var date
     */
     public $dueDate;
     
@@ -38,17 +46,17 @@ class Tasks extends AbstractModel {
     public $status;
     
     /**
-     * @var datetime
+     * @var date
      */
     public $startDate;
     
     /**
-     * @var datetime
+     * @var date
      */
     public $completionDate;
     
     /**
-     * @var enum
+     * @var varchar: Object, Document, Asset path.
      */
     public $associatedElement;
     
@@ -120,7 +128,7 @@ class Tasks extends AbstractModel {
     }
  
     /**
-     * @return datetime
+     * @return date
      */
     public function getDueDate() { 
         return $this->dueDate;
@@ -195,7 +203,7 @@ class Tasks extends AbstractModel {
     }
  
     /**
-     * @return enum
+     * @return varchar(255)
      */
     public function getAssociatedElement() {
         return $this->associatedElement;

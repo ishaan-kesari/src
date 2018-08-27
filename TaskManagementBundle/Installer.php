@@ -20,6 +20,10 @@ use \Pimcore\Model\User\Permission\Definition;
 
 class Installer extends AbstractInstaller
 {
+   /**
+    * 
+    * @return boolean
+    */
     public function isInstalled()
     {
         try {
@@ -30,11 +34,19 @@ class Installer extends AbstractInstaller
         }
     }
 
+    /**
+     * 
+     * @return type
+     */
     public function canBeInstalled()
     {
         return !$this->isInstalled();
     }
-
+    
+    /**
+     *  Create permission and table for task management at the time of plugin installation.
+     * 
+     */
     public function install()
     {
         
@@ -65,12 +77,19 @@ class Installer extends AbstractInstaller
         
     
     }
-
+    
+    /**
+     * 
+     * @return type
+     */
     public function canBeUninstalled()
     {
         return $this->isInstalled();
     }
-
+    
+    /**
+     *  Drop table of task management at the time of plugin uninstallation.
+     */
     public function uninstall()
     {
         $db = Db::get();
