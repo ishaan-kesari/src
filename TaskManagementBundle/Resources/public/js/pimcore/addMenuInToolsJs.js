@@ -22,7 +22,7 @@ pimcore.plugin.addMenuInToolsJs = Class.create({
         var user = pimcore.globalmanager.get("user");
         if (user.isAllowed("task_management") ) {
             var toolbar = pimcore.globalmanager.get("layout_toolbar");
-            
+            if(user.admin == true) {
             var action = new Ext.Action({
                 text: t("task_management"),
                 iconCls: "task_management_icon pimcore_menu_mds pimcore_menu_item pimcore_menu_needs_hildren ",
@@ -43,11 +43,30 @@ pimcore.plugin.addMenuInToolsJs = Class.create({
                             cls:'backColor',
                             handler: function() {
                                 new pimcore.plugin.addMenuInToolsJs().showSettings();
+                            }
+                        }
+                    ]
+                }
+            });
+        }else {
+            var action = new Ext.Action({
+                text: t("task_management"),
+                iconCls: "task_management_icon pimcore_menu_mds pimcore_menu_item pimcore_menu_needs_hildren ",
+                menu: {
+                    xtype: 'menu',                         
+                    items: [{
+                            text: t("listing"),
+                            id: "task_management_menu",
+                            icon: '/pimcore/static6/img/flat-color-icons/list.svg',
+                            cls:'backColor',
+                            handler: function() {
+                               new pimcore.plugin.addMenuInToolsJs().showTab();
                             },
                         }
                     ]
                 }
             });
+        }
             
             toolbar.extrasMenu.add(action);
             pimcore.helpers.initMenuTooltips();
