@@ -306,51 +306,122 @@ pimcore.plugin.contextMenu = Class.create({
         
        
         /*
-         * Open view detail on right click on grid
+         * Open view details on right click of grid rows
         */
         function detail(taskDetail) {
-            var viewField = Ext.create('Ext.form.Panel', {
-                height: 500,
-                width: 700,
-                bodyPadding: 10,
-                defaultType: 'textfield',
-                items: [
-                    {
-                        xtype: 'label',
-                        html : "<h4>"+t('subject')+':&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+taskDetail["subject"]+'</h4>',
-                        width:700,
-                    },{
-                        xtype: 'label',
-                        html: "<h4>"+t('description')+':&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+taskDetail["description"]+'</h4>',
-                        width:700
-                    },{
-                        xtype: 'label',
-                        html:"<h4>"+t('start_date')+':&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+taskDetail["startDate"]+'</h4>',
-                        width:700
-                    },{
-                        xtype: 'label',
-                        html: "<h4>"+t('due_date')+':&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+taskDetail["dueDate"]+'</h4>',
-                        width:700,
-                    },{
-                        xtype: 'label',
-                        html: "<h4>"+t('completion_date')+':&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+taskDetail["completionDate"]+'</h4>',
-                        width:700,
-                    },{
-                        xtype: 'label',
-                        html: "<h4>"+t('status')+':&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+taskDetail["status"]+'</h4>',
-                        width:700
-                    },{
-                        xtype: 'label',
-                        html :"<h4>"+ t('priority')+':&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+taskDetail["priority"]+'</h4>',
-                        width:700
-                    },{
-                        xtype: 'label',
-                        html: "<h4>"+ t('associated_element')+':&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+taskDetail["associatedElement"]+'</h4>',
-                        width:700
-                    }
-                ]
-            });
-              
+            
+            var  viewField =  Ext.create('Ext.Container', {
+                    fullscreen: false,
+                    style: "padding-left:30px",
+                    layout: 'vbox',
+                    items: [
+                        {   layout: 'hbox',
+                            items:[
+                                {
+                                    html: "<h4>"+t('subject')+':</h4>',
+                                    flex: 1,
+                                    width:200
+                                },
+                                {
+                                    html: '<h4>'+taskDetail["subject"]+'</h4>',
+                                    flex: 2,
+                                }
+                            ]
+                        },{ 
+                            layout: 'hbox',
+                            items:[
+                                {
+                                    html: "<h4>"+t('description')+':</h4>',
+                                    flex: 1,
+                                    width:200
+                                },
+                                {
+                                    html: '<h4>'+taskDetail["description"]+'</h4>',
+                                    flex: 2
+                                }
+                            ]
+                        },{ 
+                            layout: 'hbox',
+                            items:[
+                                {
+                                    html: "<h4>"+t('start_date')+':</h4>',
+                                    flex: 1,
+                                    width:200
+                                },
+                                {
+                                    html: '<h4>'+taskDetail["startDate"]+'</h4>',
+                                    flex: 2
+                                }
+                            ]
+                        },{ 
+                            layout: 'hbox',
+                            items:[
+                                {
+                                    html: "<h4>"+t('due_date')+':</h4>',
+                                    flex: 1,
+                                    width:200
+                                },
+                                {
+                                    html: '<h4>'+taskDetail["dueDate"]+'</h4>',
+                                    flex: 2
+                                }
+                            ]
+                        },{ 
+                            layout: 'hbox',
+                            items:[
+                                {
+                                    html: "<h4>"+t('completion_date')+':</h4>',
+                                    flex: 1,
+                                    width:200
+                                },
+                                {
+                                    html: '<h4>'+taskDetail["completionDate"]+'</h4>',
+                                    flex: 2
+                                }
+                            ]
+                        },{ 
+                            layout: 'hbox',
+                            items:[
+                                {
+                                    html: "<h4>"+t('status')+':</h4>',
+                                    flex: 1,
+                                    width:200
+                                },
+                                {
+                                    html: '<h4>'+taskDetail["status"]+'</h4>',
+                                    flex: 2
+                                }
+                            ]
+                        },{ 
+                            layout: 'hbox',
+                            items:[
+                                {
+                                    html: "<h4>"+t('priority')+':</h4>',
+                                    flex: 1,
+                                    width:200
+                                },
+                                {
+                                    html: '<h4>'+taskDetail["priority"]+'</h4>',
+                                    flex: 2
+                                }
+                            ]
+                        },{ 
+                            layout: 'hbox',
+                            items:[
+                                {
+                                    html: "<h4>"+t('associated_element')+':</h4>',
+                                    flex: 1,
+                                    width:200
+                                },
+                                {
+                                    html: '<h4>'+taskDetail["associatedElement"]+'</h4>',
+                                    flex: 2
+                                }
+                            ]
+                        }
+                    ]
+                });
+                
             
             var viewWindow = new Ext.Window({
                 modal:true,
