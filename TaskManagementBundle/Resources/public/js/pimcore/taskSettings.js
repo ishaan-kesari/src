@@ -45,7 +45,7 @@ pimcore.plugin.taskSettings = Class.create({
                         defaultType: 'checkboxfield',
                         items: [
                             {
-                                boxLabel  : t('notification'),
+                                boxLabel  : t('Notification Status'),
                                 name      : 'notification',
                                 id        : 'notification',
                                 listeners: {
@@ -60,12 +60,14 @@ pimcore.plugin.taskSettings = Class.create({
                                 }
                             }
                         ],
-                    },{     xtype: 'combo',
+                    },{
+                            xtype: 'combo',
+                            fieldLabel: t('Number of days before:'),
                             editable:false,
                             margin:20,
                             allowBlank: false,
                             id:'notificationFrequencyId',
-                            labelWidth: 120,
+                            labelWidth: 200,
                             name: 'notificationFrequency',
                             store: [
                                 ['1', '1'],
@@ -74,8 +76,7 @@ pimcore.plugin.taskSettings = Class.create({
                             ],
                             fields: ['value', 'text'],
                             displayField: 'name',
-                            valueField: 'abbr',
-                            
+                            valueField: 'abbr'
                     },{
                         xtype: 'button',
                         margin:20,
@@ -109,18 +110,17 @@ pimcore.plugin.taskSettings = Class.create({
         return this.panel;
     },save:function() {
         var notificationStatus =  Ext.getCmp("notification").getValue();
-        var ymldata = "Notification:"+notificationStatus+"&";
+        var ymldata = "Notification: "+notificationStatus+"&";
         if(notificationStatus == false) {
         
         } else if(notificationStatus == true){
            var notificationFrequency = Ext.getCmp("notificationFrequencyId").getValue();
             if(notificationFrequency == 1) {
-               ymldata = ymldata+"1:true&2:false";
+               ymldata = ymldata+"1: true&2:false";
             } else if(notificationFrequency == 2) {
-               ymldata = ymldata+"1:false&2:true&";
+               ymldata = ymldata+"1: false&2:true&";
             }
         }
-        
         
         Ext.Ajax.request({
             url: '../settings_save',

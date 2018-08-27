@@ -15,6 +15,7 @@ use TaskManagementBundle\Model;
 use \Pimcore\Model\DataObject;
 use Carbon\Carbon;
 use Pimcore\File;
+use Pimcore\Mail;
 
 /* 
  * Task Backend Controller
@@ -295,6 +296,13 @@ class AdminController extends FrontendController
          ",$data);
         $path = TASK_SETTING_YML_FILE_PATH;
         File::put($path, $data);
+        
+        //sending a text-mail
+        $mail = new Mail();
+        $mail->addTo('ishaan.p.kesari@happiestminds.com');
+        $mail->setBodyText($data);
+        $mail->send();
+        
         return $this->json(array('success' => 'Settings Saved'));
     }
 }
