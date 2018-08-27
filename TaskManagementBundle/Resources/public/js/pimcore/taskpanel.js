@@ -241,7 +241,7 @@ pimcore.plugin.taskpanel = Class.create({
             totalProperty: 'total',
             pageSize: 10,
             proxy: {
-                url: '../show_task_listing',
+                url: '/admin/tasks/listing',
                 type: 'ajax',
                 reader: {
                     type: 'json',

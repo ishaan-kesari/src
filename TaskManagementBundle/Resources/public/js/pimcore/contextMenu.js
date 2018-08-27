@@ -19,7 +19,7 @@ pimcore.plugin.contextMenu = Class.create({
                                 icon: '/pimcore/static6/img/flat-color-icons/edit.svg',
                                 handler: function (grid, rowIndex) {
                                     Ext.Ajax.request({
-                                        url: '../current_task_detail',
+                                        url: '../admin/current-task-detail',
                                         params: {
                                             "id" :record.data.id
                                         },
@@ -43,7 +43,7 @@ pimcore.plugin.contextMenu = Class.create({
                                 handler:function () {
                                     var rec = grid.getStore().getAt(rowIndex);
                                     Ext.Ajax.request({
-                                        url: '../delete_task',
+                                        url: '../admin/delete-task',
                                         params: {
                                             "id" : Ext.encode([rec.getId()])
                                         },
@@ -63,7 +63,7 @@ pimcore.plugin.contextMenu = Class.create({
                                 icon: '/pimcore/static6/img/flat-color-icons/view_details.svg',
                                 handler: function (data,rowIndex) {
                                     Ext.Ajax.request({
-                                        url: '../current_task_detail',
+                                        url: '../admin/current-task-detail',
                                         params: {
                                             "id" :record.data.id
                                         },
@@ -93,8 +93,8 @@ pimcore.plugin.contextMenu = Class.create({
          */
         function editTaskFormFn(taskDetail) {
             var panelTitle = "Edit Task";
-            var url = 'admin/update_task';
-            var msg = 'updated';
+            var url = '../admin/update-task';
+            var msg = t('updated');
             var description             = taskDetail['description'];
             var dueDate                 = taskDetail['dueDate'].split(" ")[0];
             var priority                = taskDetail['priority'];
@@ -283,7 +283,7 @@ pimcore.plugin.contextMenu = Class.create({
                             var form = editTaskForm.getForm();
                             form.submit({
                                 method  : 'POST',
-                                url:'../'+url, //for update
+                                url:url, //for update
                                 params: {
                                     "id" : taskDetail['id']
                                 },
