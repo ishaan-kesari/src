@@ -154,26 +154,22 @@ class TasksController extends FrontendController {
 
         $totalCount = $taskListingObj->count();
         $taskListingData = $taskListingObj->load();
-        //$listingData = ;
-        foreach($taskListingData as $task ){
-            $listingData = $task;
+        $listingData = [];
+        foreach($taskListingData as $key =>$task ){
+            $listingData[$key]['id'] = $task->id;
+            $listingData[$key]['description'] = $task->description;
+            $listingData[$key]['dueDate'] = $task->dueDate;
+            $listingData[$key]['priority'] = $task->priority;
+            $listingData[$key]['status'] = $task->status;
+            $listingData[$key]['startDate'] = $task->startDate;
+            $listingData[$key]['completionDate'] = $task->completionDate;
+            $listingData[$key]['associatedElement'] = $task->associatedElement;
+            $listingData[$key]['subject'] = $task->subject;
+            $listingData[$key]['userOwner'] = $task->userOwner;
         }
-        
-        p_r($taskListingData);
-        die;
-        return $this->json(array('success' => 'true','data' => $listingData,'total' => $totalCount));
-//        return $this->json(
-//                            [
-//            "success" => true,
-//            'data' => $taskListingData,
-//            'total' => $totalCount]
-//            );
-        $response = \GuzzleHttp\json_encode([
-            "success" => true,
-            'data' => $taskListingData,
-            'total' => $totalCount]);
 
-        return new Response($response);
+        return $this->json(array('success' => 'true','data' => $listingData,'total' => $totalCount));
+
     }
 
     /**
