@@ -20,6 +20,7 @@ use Pimcore\Controller\FrontendController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use TaskManagementBundle\Model;
 use \Pimcore\Model\DataObject;
 use Carbon\Carbon;
@@ -103,12 +104,16 @@ class TasksController extends FrontendController {
         $taskListingObj->setLimit($limit);
 
         $subject = $request->get('subject');
+        $fromDate = $request->get('fromDate');
+        $toDate = $request->get('toDate');
+        $status = $request->get('status');
+        $priority = $request->get('priority');
+        
         $flag = false;
         if ($subject != "") {
             $taskListingObj->setCondition('subject LIKE ?', '%' . $subject . '%', 'AND');
             $flag = true;
         }
-        $fromDate = $request->get('fromDate');
         if ($fromDate != "") {
             $fromDate = $this->parseDateTime($fromDate);
             if ($flag == true) {
@@ -118,7 +123,7 @@ class TasksController extends FrontendController {
                 $flag = true;
             }
         }
-        $toDate = $request->get('toDate');
+        
         if ($toDate != "") {
             $toDate = $this->parseDateTime($toDate);
             if ($flag == true) {
@@ -128,7 +133,6 @@ class TasksController extends FrontendController {
                 $flag = true;
             }
         }
-        $status = $request->get('status');
 
         if ($status != "") {
             if ($flag == true) {
@@ -138,7 +142,7 @@ class TasksController extends FrontendController {
                 $flag = true;
             }
         }
-        $priority = $request->get('priority');
+        
         if ($priority != "") {
             if ($flag == true) {
                 $taskListingObj->addConditionParam('priority = ?', $priority, 'AND');
@@ -150,12 +154,22 @@ class TasksController extends FrontendController {
 
         $totalCount = $taskListingObj->count();
         $taskListingData = $taskListingObj->load();
-        $response = \GuzzleHttp\json_encode([
-            "success" => true,
-            'data' => $taskListingData,
-            'total' => $totalCount]);
+        $listingData = [];
+        foreach($taskListingData as $key =>$task ){
+            $listingData[$key]['id'] = $task->id;
+            $listingData[$key]['description'] = $task->description;
+            $listingData[$key]['dueDate'] = $task->dueDate;
+            $listingData[$key]['priority'] = $task->priority;
+            $listingData[$key]['status'] = $task->status;
+            $listingData[$key]['startDate'] = $task->startDate;
+            $listingData[$key]['completionDate'] = $task->completionDate;
+            $listingData[$key]['associatedElement'] = $task->associatedElement;
+            $listingData[$key]['subject'] = $task->subject;
+            $listingData[$key]['userOwner'] = $task->userOwner;
+        }
 
-        return new Response($response);
+        return $this->json(array('success' => 'true','data' => $listingData,'total' => $totalCount));
+
     }
 
     /**

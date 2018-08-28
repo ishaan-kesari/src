@@ -32,7 +32,7 @@ pimcore.layout.portlets.taskportlet = Class.create(pimcore.layout.portlets.abstr
             autoDestroy: true,
             proxy: {
                 type: 'ajax',
-                url: '../admin/task/portlet',
+                url: 'tasks/portlet',
                 reader: {
                     type: 'json',
                      rootProperty: 'data'
