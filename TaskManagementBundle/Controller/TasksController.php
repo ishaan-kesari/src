@@ -200,19 +200,8 @@ class TasksController extends FrontendController {
         $taskListingObj = new Model\Tasks\Listing();
         $taskListingObj->setCondition("id = ?", $id)->setLimit(1);
         $taskDetail = $taskListingObj->load();
-        
-        p_r($taskDetail);
-        
-        $data = [];
-        
-        foreach($taskDetail as $key=>$value) {
-            $data[$key]['id'] = $value['id'];
-        }
-        
-        p_r($data);
-       
-       return $this->json(array('data' => $data));
-       
+        $listingData = $this->dataInArray($taskDetail);
+        return $this->json(array('data' => $listingData));
     }
 
        /**
