@@ -6,14 +6,19 @@ pimcore.plugin.toolbar = Class.create({
     */
     initialize:function () {
     },
+    
     getClassName: function () {
         return "pimcore.plugin.toolbar";
     },
+    /**
+     * Add task form and sumbit handler
+     * @returns {undefined}
+     */
     addTask: function() {
             Ext.getCmp("pimcore_button_add").disable();
-            var panelTitle         = "Add Task";
-            var url                = 'admin/save_task';
-            var msg                = 'saved';
+            var panelTitle         = t("Add Task");
+            var url                = 'admin/task/save';
+            var msg                = t('saved');
             var myId = Ext.id();
             var associatedField =  new Ext.form.FormPanel({
                 id: myId,
@@ -180,7 +185,7 @@ pimcore.plugin.toolbar = Class.create({
                             var form = AddTaskForm.getForm();
                             form.submit({
                                 method  : 'POST',
-                                url:'../'+url, //for AddTask
+                                url: url, 
                                 success : function() {
                                     Ext.getCmp('mygrid').getStore().load({
                                         params: {
@@ -200,6 +205,7 @@ pimcore.plugin.toolbar = Class.create({
             });
             win.show();
     },
+    // delete selected row
     deleteSelected: function(data, rowNumber) {
         var grid = data.up('gridpanel');
         var arraySelected =grid.getSelectionModel().getSelection();
@@ -210,7 +216,7 @@ pimcore.plugin.toolbar = Class.create({
         });
 
         Ext.Ajax.request({
-            url: '../delete_task',
+            url: 'admin/task/delete',
             params: {
                 id : Ext.encode(id)
             },
@@ -228,6 +234,7 @@ pimcore.plugin.toolbar = Class.create({
             }
         }); 
     },
+    // Change status as completed.
     completedStatusUpdate : function(data, rowNumber) {
         var grid = data.up('gridpanel');
         var arraySelected = grid.getSelectionModel().getSelection();
@@ -238,7 +245,7 @@ pimcore.plugin.toolbar = Class.create({
         });
 
         Ext.Ajax.request({
-            url: '../completed_task',
+            url: 'task/completed-task',
             params: {
                 "id": Ext.encode(id)
             },
@@ -254,6 +261,7 @@ pimcore.plugin.toolbar = Class.create({
             }
         }); 
     },
+    // Action status of buttons of main panel.
     buttonStates: function() {
         var selectedRows = this.grid.getSelectionModel().getSelection();
         if (selectedRows.length >= 1) {

@@ -1,11 +1,18 @@
 pimcore.registerNS("pimcore.plugin.taskSettings");
 
 pimcore.plugin.taskSettings = Class.create({
-     initialize: function () {
+    
+    initialize: function () {
         this.getData();
     },
+    /**
+     * Notification form with save handler.
+     * 
+     * @returns {Ext.Panel}
+     */
     getData:function() {
         if (!this.panel) {
+            // setting panel
             this.panel = new Ext.Panel({
                 id:         "task_management_settings",
                 title:      t("task_settings"),
@@ -14,7 +21,7 @@ pimcore.plugin.taskSettings = Class.create({
                 closable:   true,
                 icon:       '/pimcore/static6/img/flat-color-icons/settings.svg',
             });
-            
+            // Form panel for field container
             this.settingForm = new Ext.FormPanel({
                 height:'100',
                 width:'100',
@@ -30,7 +37,7 @@ pimcore.plugin.taskSettings = Class.create({
                 ]
                  
             });
-            
+            // Notification form panel
             this.notificationMenu = new Ext.FormPanel({
                 title: t('task_settings'),
                 height:890,
@@ -60,7 +67,8 @@ pimcore.plugin.taskSettings = Class.create({
                                 }
                             }
                         ],
-                    },{
+                    },
+                    {
                             xtype: 'combo',
                             fieldLabel: t('Number of days before:'),
                             editable:false,
@@ -77,7 +85,8 @@ pimcore.plugin.taskSettings = Class.create({
                             fields: ['value', 'text'],
                             displayField: 'name',
                             valueField: 'abbr'
-                    },{
+                    },
+                    {
                         xtype: 'button',
                         margin:20,
                         text: t('save'),
@@ -108,7 +117,9 @@ pimcore.plugin.taskSettings = Class.create({
             pimcore.layout.refresh();
         }
         return this.panel;
-    },save:function() {
+    },
+    // save handler
+    save:function() {
         var notificationStatus =  Ext.getCmp("notification").getValue();
         var ymldata = "Notification: "+notificationStatus+"&";
         if(notificationStatus == false) {
@@ -123,7 +134,7 @@ pimcore.plugin.taskSettings = Class.create({
         }
         
         Ext.Ajax.request({
-            url: '../settings_save',
+            url: 'task/settings-save',
             params: {
                 "data": ymldata
             },

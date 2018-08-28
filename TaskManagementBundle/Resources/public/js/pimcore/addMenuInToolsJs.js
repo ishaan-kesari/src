@@ -10,11 +10,14 @@ pimcore.plugin.addMenuInToolsJs = Class.create({
         };
         Ext.apply(this.config, config);
         this.searchParams = this.config.searchParams;
-        // pimcore.layout.reload();
     },
     getClassName: function () {
         return "pimcore.plugin.taskManagmentExtFile";
     },
+    /**
+     * Add sub-menu in tools menu
+     * @returns {Boolean}
+     */
     addMenuInTools: function () {
         var user = pimcore.globalmanager.get("user");
         if (user.isAllowed("task_management") ) {
@@ -71,6 +74,11 @@ pimcore.plugin.addMenuInToolsJs = Class.create({
             return false;
         }
     },
+    /**
+     * Listing handler
+     * 
+     * @returns {undefined}
+     */
     showTab: function() {
         if (!Ext.getCmp("task_manager_panel")) {
             new pimcore.plugin.taskpanel();
@@ -78,6 +86,10 @@ pimcore.plugin.addMenuInToolsJs = Class.create({
             Ext.getCmp("pimcore_panel_tabs").setActiveItem("task_manager_panel");
         }
     },
+    /**
+     * Setting handler
+     * @returns {undefined}
+     */
     showSettings: function() {
         if (!Ext.getCmp("task_management_settings")) {
             new pimcore.plugin.taskSettings();

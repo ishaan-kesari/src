@@ -17,11 +17,11 @@ pimcore.layout.portlets.taskportlet = Class.create(pimcore.layout.portlets.abstr
     getType: function () {
         return "pimcore.layout.portlets.taskportlet";
     },
-
+    // Portlet name
     getName: function () {
         return "Task - Latest 10";
     },
-
+    // Portlet icon
     getIcon: function () {
         return "task_management_icon";
     },
@@ -32,7 +32,7 @@ pimcore.layout.portlets.taskportlet = Class.create(pimcore.layout.portlets.abstr
             autoDestroy: true,
             proxy: {
                 type: 'ajax',
-                url: '../task_portlet',
+                url: '../admin/task/portlet',
                 reader: {
                     type: 'json',
                      rootProperty: 'data'
@@ -54,12 +54,6 @@ pimcore.layout.portlets.taskportlet = Class.create(pimcore.layout.portlets.abstr
             stripeRows: true,
             autoExpandColumn: 'associated_element'
         });
-/*
-        grid.on("rowclick", function(grid, record, tr, rowIndex, e, eOpts ) {
-            var data = grid.getStore().getAt(rowIndex);
-
-            pimcore.helpers.openDocument(data.data.id, data.data.type);
-        });*/
 
         this.layout = Ext.create('Portal.view.Portlet', Object.extend(this.getDefaultConfig(), {
             title: this.getName(),
