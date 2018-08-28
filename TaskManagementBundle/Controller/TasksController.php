@@ -200,11 +200,19 @@ class TasksController extends FrontendController {
         $taskListingObj = new Model\Tasks\Listing();
         $taskListingObj->setCondition("id = ?", $id)->setLimit(1);
         $taskDetail = $taskListingObj->load();
-
-        $response = \GuzzleHttp\json_encode([
-            'success' => $taskDetail]);
-
-        return new Response($response);
+        
+        p_r($taskDetail);
+        
+        $data = [];
+        
+        foreach($taskDetail as $key=>$value) {
+            $data[$key]['id'] = $value['id'];
+        }
+        
+        p_r($data);
+       
+       return $this->json(array('data' => $data));
+       
     }
 
        /**
