@@ -154,6 +154,12 @@ class TasksController extends FrontendController {
 
         $totalCount = $taskListingObj->count();
         $taskListingData = $taskListingObj->load();
+        $listingData = $this->dataInArray($taskListingData);
+       return $this->json(array('success' => 'true','data' => $listingData,'total' => $totalCount));
+
+    }
+    
+    private function dataInArray ($taskListingData){
         $listingData = [];
         foreach($taskListingData as $key =>$task ){
             $listingData[$key]['id'] = $task->id;
@@ -167,11 +173,8 @@ class TasksController extends FrontendController {
             $listingData[$key]['subject'] = $task->subject;
             $listingData[$key]['userOwner'] = $task->userOwner;
         }
-
-        return $this->json(array('success' => 'true','data' => $listingData,'total' => $totalCount));
-
+        return $listingData;
     }
-
     /**
      * @param string|null $date
      * @param string|null $time
@@ -253,10 +256,8 @@ class TasksController extends FrontendController {
        $taskListingObj->setOrder('DESC');
        $taskListingObj->setLimit(10);
        $taskListingData = $taskListingObj->load(); 
-               $response = \GuzzleHttp\json_encode([
-                      'data' => $taskListingData]
-           );
-        return new Response($response);
+       $listingData = $this->dataInArray($taskListingData);
+       return $this->json(array('data'=>$listingData));
     }
 
     /**
