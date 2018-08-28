@@ -47,7 +47,10 @@ class TasksController extends FrontendController {
         if ($user) {
             $userId = $user->getId();
         }
-
+        
+        if($request->get('edit') == true) {
+            $id = $request->get('id');
+        }
         $description = $request->get('description');
         $dueDate = Carbon::createFromFormat('m/d/y', $request->get('dueDate'));
         $priority = $request->get('priority');
@@ -60,6 +63,11 @@ class TasksController extends FrontendController {
         $subject = $request->get('subject');
 
         $tasksObj = new Model\Tasks();
+        
+        if($request->get('edit') == true) {
+            $tasksObj->setId($id);
+        }
+        
         $tasksObj->setDescription($description);
         $tasksObj->setDueDate($dueDate);
         $tasksObj->setPriority($priority);
@@ -77,6 +85,8 @@ class TasksController extends FrontendController {
 
     }
 
+    
+    
     /**
      * @Route("/tasks/listing")
      * 
@@ -180,53 +190,7 @@ class TasksController extends FrontendController {
         return new Response($response);
     }
 
-    /**
-     * Update Task Detail for specific id
-     * 
-     * @Route("/tasks/update-task")
-     * @param Request $request
-     *
-     * @return JsonResponse
-     * 
-     */
-    public function updateTask(Request $request) {
-        $userId = 0;
-        $user = \Pimcore\Tool\Admin::getCurrentUser();
-        if ($user) {
-            $userId = $user->getId();
-        }
-        $id = $request->get('id');
-        $description = $request->get('description');
-        $dueDate = Carbon::createFromFormat('m/d/y', $request->get('dueDate'));
-        $priority = $request->get('priority');
-        $status = $request->get('status');
-        $startDate = Carbon::createFromFormat('m/d/y', $request->get('startDate'));
-        if ($request->get('completionDate') != '') {
-            $completionDate = Carbon::createFromFormat('m/d/y', $request->get('completionDate'));
-        }
-        $associatedElement = $request->get('associatedElement');
-        $subject = $request->get('subject');
-
-        $tasksObj = new Model\Tasks();
-        $tasksObj->setId($id);
-        $tasksObj->setDescription($description);
-        $tasksObj->setDueDate($dueDate);
-        $tasksObj->setPriority($priority);
-        $tasksObj->setStatus($status);
-        $tasksObj->setStartDate($startDate);
-        if ($request->get('completionDate') != '') {
-            $tasksObj->setCompletionDate($completionDate);
-        }
-        $tasksObj->setAssociatedElement($associatedElement);
-        $tasksObj->setSubject($subject);
-        $tasksObj->setUserOwner($userId);
-        $tasksObj->save();
-
-        return $this->json(array('success' => 'true'));
-
-    }
-
-    /**
+       /**
      * Delete selected task
      * 
      * @Route("/tasks/delete")

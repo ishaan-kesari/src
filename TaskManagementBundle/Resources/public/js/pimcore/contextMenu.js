@@ -93,7 +93,7 @@ pimcore.plugin.contextMenu = Class.create({
          */
         function editTaskFormFn(taskDetail) {
             var panelTitle = "Edit Task";
-            var url = 'tasks/update-task';
+            var url = 'tasks/save';
             var msg = t('updated');
             var description             = taskDetail['description'];
             var dueDate                 = taskDetail['dueDate'].split(" ")[0];
@@ -285,7 +285,8 @@ pimcore.plugin.contextMenu = Class.create({
                                 method  : 'POST',
                                 url:url, //for update
                                 params: {
-                                    "id" : taskDetail['id']
+                                    "id" : taskDetail['id'],
+                                    "edit": true
                                 },
                                 success : function() {
                                     Ext.getCmp('mygrid').getStore().load({
