@@ -134,7 +134,7 @@ pimcore.plugin.taskSettings = Class.create({
         }
         
         Ext.Ajax.request({
-            url: '../settings_save',
+            url: 'tasks/settings-save',
             params: {
                 "data": ymldata
             },

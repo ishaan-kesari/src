@@ -17,7 +17,7 @@ pimcore.plugin.toolbar = Class.create({
     addTask: function() {
             Ext.getCmp("pimcore_button_add").disable();
             var panelTitle         = t("Add Task");
-            var url                = 'admin/task/save';
+            var url                = 'tasks/save';
             var msg                = t('saved');
             var myId = Ext.id();
             var associatedField =  new Ext.form.FormPanel({
@@ -216,7 +216,7 @@ pimcore.plugin.toolbar = Class.create({
         });
 
         Ext.Ajax.request({
-            url: 'admin/task/delete',
+            url: 'tasks/delete',
             params: {
                 id : Ext.encode(id)
             },
@@ -245,7 +245,7 @@ pimcore.plugin.toolbar = Class.create({
         });
 
         Ext.Ajax.request({
-            url: '../admin/completed-task',
+            url: 'tasks/completed-task',
             params: {
                 "id": Ext.encode(id)
             },

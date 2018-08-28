@@ -30,17 +30,17 @@ use Pimcore\Mail;
 /**
 * @Route("/admin")
 */
-class AdminController extends FrontendController {
+class TasksController extends FrontendController {
 
     /**
-     * @Route("/task-management-admin-index")
+     * @Route("/tasks/task-management-admin-index")
      */
     public function indexAction(Request $request) {
         
     }
 
     /**
-     * @Route("/task/save")
+     * @Route("/tasks/save")
      */
     public function save(Request $request) {
         $userId = 0;
@@ -48,7 +48,10 @@ class AdminController extends FrontendController {
         if ($user) {
             $userId = $user->getId();
         }
-
+        
+        if($request->get('edit') == true) {
+            $id = $request->get('id');
+        }
         $description = $request->get('description');
         $dueDate = Carbon::createFromFormat('m/d/y', $request->get('dueDate'));
         $priority = $request->get('priority');
@@ -61,6 +64,11 @@ class AdminController extends FrontendController {
         $subject = $request->get('subject');
 
         $tasksObj = new Model\Tasks();
+        
+        if($request->get('edit') == true) {
+            $tasksObj->setId($id);
+        }
+        
         $tasksObj->setDescription($description);
         $tasksObj->setDueDate($dueDate);
         $tasksObj->setPriority($priority);
@@ -74,9 +82,12 @@ class AdminController extends FrontendController {
         $tasksObj->setUserOwner($userId);
         $tasksObj->save();
 
-        return $this->json(array('success' => 'TaskAdded'));
+        return $this->json(array('success' => 'true'));
+
     }
 
+    
+    
     /**
      * @Route("/tasks/listing")
      * 
@@ -179,13 +190,13 @@ class AdminController extends FrontendController {
     /**
      * Task Detail for specific id
      * 
-     * @Route("/current_task_detail")
+     * @Route("/tasks/current-task-detail")
      * @param Request $request
      *
      * @return JsonResponse
      * 
-     */
-    public function currentTaskDetail(Request $request) {
+    */
+    public function viewTask(Request $request) {
         $id = $request->get('id');
         $taskListingObj = new Model\Tasks\Listing();
         $taskListingObj->setCondition("id = ?", $id)->setLimit(1);
@@ -197,55 +208,10 @@ class AdminController extends FrontendController {
         return new Response($response);
     }
 
-    /**
-     * Update Task Detail for specific id
-     * 
-     * @Route("/update-task")
-     * @param Request $request
-     *
-     * @return JsonResponse
-     * 
-     */
-    public function updateTask(Request $request) {
-        $userId = 0;
-        $user = \Pimcore\Tool\Admin::getCurrentUser();
-        if ($user) {
-            $userId = $user->getId();
-        }
-        $id = $request->get('id');
-        $description = $request->get('description');
-        $dueDate = Carbon::createFromFormat('m/d/y', $request->get('dueDate'));
-        $priority = $request->get('priority');
-        $status = $request->get('status');
-        $startDate = Carbon::createFromFormat('m/d/y', $request->get('startDate'));
-        if ($request->get('completionDate') != '') {
-            $completionDate = Carbon::createFromFormat('m/d/y', $request->get('completionDate'));
-        }
-        $associatedElement = $request->get('associatedElement');
-        $subject = $request->get('subject');
-
-        $tasksObj = new Model\Tasks();
-        $tasksObj->setId($id);
-        $tasksObj->setDescription($description);
-        $tasksObj->setDueDate($dueDate);
-        $tasksObj->setPriority($priority);
-        $tasksObj->setStatus($status);
-        $tasksObj->setStartDate($startDate);
-        if ($request->get('completionDate') != '') {
-            $tasksObj->setCompletionDate($completionDate);
-        }
-        $tasksObj->setAssociatedElement($associatedElement);
-        $tasksObj->setSubject($subject);
-        $tasksObj->setUserOwner($userId);
-        $tasksObj->save();
-
-        return $this->json(array('success' => 'updated'));
-    }
-
-    /**
+       /**
      * Delete selected task
      * 
-     * @Route("/task/delete")
+     * @Route("/tasks/delete")
      * @param Request $request
      *
      * @return JsonResponse
@@ -259,57 +225,55 @@ class AdminController extends FrontendController {
             $tasksObj->setId($id[$i]);
             $tasksObj->delete();
         }
-
-        return $this->json(array('success' => 'deleted'));
+        
+        return $this->json(array('success' => 'true'));
     }
 
     /**
      * Change status to completed task
      * 
-     * @Route("/completed-task")
+     * @Route("/tasks/completed-task")
      * 
-     */
-    public function completedTask(Request $request) {
-        $id = json_decode($request->get('id'));
+    */
+    public function updateStatus(Request $request) {
+        $id= json_decode($request->get('id'));
         $taskManagmentObj = new Model\Tasks();
         for ($i = 0; $i < sizeof($id); $i++) {
             $taskManagmentObj->setId($id[$i]);
             $taskManagmentObj->setStatus('Completed');
             $taskManagmentObj->save();
         }
-        return $this->json(array('success' => 'Status updated to completed'));
+        return $this->json(array('success' => 'true'));
     }
 
     /**
-     * @Route("/task/portlet");
+     * @Route("/tasks/portlet");
      * @param Request $request
      */
     public function portletList(Request $request) {
-        $status = "Completed";
-        $taskListingObj = new Model\Tasks\Listing();
-        $taskListingObj->addConditionParam("status != ?", $status, 'AND');
-        $taskListingObj->setOrder('DESC');
-        $taskListingObj->setLimit(10);
-        $taskListingData = $taskListingObj->load();
-        $response = \GuzzleHttp\json_encode([
-            'data' => $taskListingData]
-        );
-
+       $status  = "Completed";
+       $taskListingObj = new Model\Tasks\Listing();
+       $taskListingObj->addConditionParam("status != ?",$status, 'AND');
+       $taskListingObj->setOrder('DESC');
+       $taskListingObj->setLimit(10);
+       $taskListingData = $taskListingObj->load(); 
+               $response = \GuzzleHttp\json_encode([
+                      'data' => $taskListingData]
+           );
         return new Response($response);
     }
 
     /**
-     * @Route("/settings-save");
+     * @Route("/tasks/settings-save");
      * @param Request $request
      */
-    public function settingsSave(Request $request) {
+    public function saveConfiguration(Request $request) {
         $data = $request->get("data");
-        $data = str_replace("&", "
-         ", $data);
-        $path = TASK_SETTING_YML_FILE_PATH;
+        $data =   str_replace("&","
+         ",$data);
+        $path = '../Resources/config/taskManagement.yml';
         File::put($path, $data);
-
-        return $this->json(array('success' => 'Settings Saved'));
+        return $this->json(array('success' => 'true'));
     }
 
 }
