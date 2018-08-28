@@ -20,6 +20,7 @@ use Pimcore\Controller\FrontendController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use TaskManagementBundle\Model;
 use \Pimcore\Model\DataObject;
 use Carbon\Carbon;
@@ -92,12 +93,16 @@ class AdminController extends FrontendController {
         $taskListingObj->setLimit($limit);
 
         $subject = $request->get('subject');
+        $fromDate = $request->get('fromDate');
+        $toDate = $request->get('toDate');
+        $status = $request->get('status');
+        $priority = $request->get('priority');
+        
         $flag = false;
         if ($subject != "") {
             $taskListingObj->setCondition('subject LIKE ?', '%' . $subject . '%', 'AND');
             $flag = true;
         }
-        $fromDate = $request->get('fromDate');
         if ($fromDate != "") {
             $fromDate = $this->parseDateTime($fromDate);
             if ($flag == true) {
@@ -107,7 +112,7 @@ class AdminController extends FrontendController {
                 $flag = true;
             }
         }
-        $toDate = $request->get('toDate');
+        
         if ($toDate != "") {
             $toDate = $this->parseDateTime($toDate);
             if ($flag == true) {
@@ -117,7 +122,6 @@ class AdminController extends FrontendController {
                 $flag = true;
             }
         }
-        $status = $request->get('status');
 
         if ($status != "") {
             if ($flag == true) {
@@ -127,7 +131,7 @@ class AdminController extends FrontendController {
                 $flag = true;
             }
         }
-        $priority = $request->get('priority');
+        
         if ($priority != "") {
             if ($flag == true) {
                 $taskListingObj->addConditionParam('priority = ?', $priority, 'AND');
@@ -139,6 +143,20 @@ class AdminController extends FrontendController {
 
         $totalCount = $taskListingObj->count();
         $taskListingData = $taskListingObj->load();
+        //$listingData = ;
+        foreach($taskListingData as $task ){
+            $listingData = $task;
+        }
+        
+        p_r($taskListingData);
+        die;
+        return $this->json(array('success' => 'true','data' => $listingData,'total' => $totalCount));
+//        return $this->json(
+//                            [
+//            "success" => true,
+//            'data' => $taskListingData,
+//            'total' => $totalCount]
+//            );
         $response = \GuzzleHttp\json_encode([
             "success" => true,
             'data' => $taskListingData,
