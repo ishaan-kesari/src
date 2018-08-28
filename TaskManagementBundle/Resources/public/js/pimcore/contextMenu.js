@@ -19,7 +19,7 @@ pimcore.plugin.contextMenu = Class.create({
                                 icon: '/pimcore/static6/img/flat-color-icons/edit.svg',
                                 handler: function (grid, rowIndex) {
                                     Ext.Ajax.request({
-                                        url: '../admin/current-task-detail',
+                                        url: 'tasks/current-task-detail',
                                         params: {
                                             "id" :record.data.id
                                         },
@@ -43,7 +43,7 @@ pimcore.plugin.contextMenu = Class.create({
                                 handler:function () {
                                     var rec = grid.getStore().getAt(rowIndex);
                                     Ext.Ajax.request({
-                                        url: '../admin/delete-task',
+                                        url: 'tasks/delete',
                                         params: {
                                             "id" : Ext.encode([rec.getId()])
                                         },
@@ -63,7 +63,7 @@ pimcore.plugin.contextMenu = Class.create({
                                 icon: '/pimcore/static6/img/flat-color-icons/view_details.svg',
                                 handler: function (data,rowIndex) {
                                     Ext.Ajax.request({
-                                        url: '../admin/current-task-detail',
+                                        url: 'tasks/current-task-detail',
                                         params: {
                                             "id" :record.data.id
                                         },
@@ -93,7 +93,7 @@ pimcore.plugin.contextMenu = Class.create({
          */
         function editTaskFormFn(taskDetail) {
             var panelTitle = "Edit Task";
-            var url = '../admin/update-task';
+            var url = 'tasks/update-task';
             var msg = t('updated');
             var description             = taskDetail['description'];
             var dueDate                 = taskDetail['dueDate'].split(" ")[0];

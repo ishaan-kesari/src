@@ -29,17 +29,17 @@ use Pimcore\Mail;
 /**
 * @Route("/admin")
 */
-class AdminController extends FrontendController {
+class TasksController extends FrontendController {
 
     /**
-     * @Route("/task-management-admin-index")
+     * @Route("/tasks/task-management-admin-index")
      */
     public function indexAction(Request $request) {
         
     }
 
     /**
-     * @Route("/task/save")
+     * @Route("/tasks/save")
      */
     public function save(Request $request) {
         $userId = 0;
@@ -162,7 +162,7 @@ class AdminController extends FrontendController {
     /**
      * Task Detail for specific id
      * 
-     * @Route("/current_task_detail")
+     * @Route("/tasks/current-task-detail")
      * @param Request $request
      *
      * @return JsonResponse
@@ -183,7 +183,7 @@ class AdminController extends FrontendController {
     /**
      * Update Task Detail for specific id
      * 
-     * @Route("/update-task")
+     * @Route("/tasks/update-task")
      * @param Request $request
      *
      * @return JsonResponse
@@ -229,7 +229,7 @@ class AdminController extends FrontendController {
     /**
      * Delete selected task
      * 
-     * @Route("/task/delete")
+     * @Route("/tasks/delete")
      * @param Request $request
      *
      * @return JsonResponse
@@ -250,7 +250,7 @@ class AdminController extends FrontendController {
     /**
      * Change status to completed task
      * 
-     * @Route("/task/completed-task")
+     * @Route("/tasks/completed-task")
      * 
     */
     public function updateStatus(Request $request) {
@@ -265,10 +265,10 @@ class AdminController extends FrontendController {
     }
 
     /**
-     * @Route("/task/portlet");
+     * @Route("/tasks/portlet");
      * @param Request $request
      */
-    public function portletList(Request $request) { 
+    public function portletList(Request $request) {
        $status  = "Completed";
        $taskListingObj = new Model\Tasks\Listing();
        $taskListingObj->addConditionParam("status != ?",$status, 'AND');
@@ -282,7 +282,7 @@ class AdminController extends FrontendController {
     }
 
     /**
-     * @Route("/task/settings-save");
+     * @Route("/tasks/settings-save");
      * @param Request $request
      */
     public function saveConfiguration(Request $request) {
