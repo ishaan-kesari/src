@@ -94,7 +94,7 @@ class TasksController extends FrontendController {
      * @param Request $request
      *
      * @return JsonResponse
-     */
+    */
     public function listing(Request $request) {
         $service = \Pimcore::getContainer()->get(\TaskManagementBundle\Service\Helper::class);
         $start = $request->get('start');
@@ -110,49 +110,27 @@ class TasksController extends FrontendController {
         $status = $request->get('status');
         $priority = $request->get('priority');
         
-        $flag = false;
         if ($subject != "") {
-            $taskListingObj->setCondition('subject LIKE ?', '%' . $subject . '%', 'AND');
-            $flag = true;
+            $conditionString = 'AND subject LIKE "%'.$subject.'%" ';
         }
         if ($fromDate != "") {
-            $fromDate = $service->parseDateTime($fromDate);
-            if ($flag == true) {
-                $taskListingObj->addConditionParam('startDate <= ?', $fromDate, 'AND');
-            } else {
-                $taskListingObj->setCondition('startDate <= ?', $fromDate, 'AND');
-                $flag = true;
-            }
+            $fromDate = $this->parseDateTime($fromDate);
+            $conditionString .= 'AND startDate = "'. $fromDate.'" ';
         }
-        
         if ($toDate != "") {
-            $toDate = $service->parseDateTime($toDate);
-            if ($flag == true) {
-                $taskListingObj->addConditionParam('dueDate > ?', $toDate, 'AND');
-            } else {
-                $taskListingObj->setCondition('dueDate > ?', $toDate, 'AND');
-                $flag = true;
-            }
+            $toDate = $this->parseDateTime($toDate);
+            $conditionString .= 'AND dueDate = "'. $toDate.'" ';
         }
-
         if ($status != "") {
-            if ($flag == true) {
-                $taskListingObj->addConditionParam('status = ?', $status, 'AND');
-            } else {
-                $taskListingObj->setCondition('status = ?', $status, 'AND');
-                $flag = true;
-            }
+            $conditionString .= 'AND status = "'.$status.'" ';
         }
         
         if ($priority != "") {
-            if ($flag == true) {
-                $taskListingObj->addConditionParam('priority = ?', $priority, 'AND');
-            } else {
-                $taskListingObj->setCondition('priority = ?', $priority, 'AND');
-                $flag = true;
-            }
+            $conditionString .= 'AND priority = "'. $priority.'" ';
         }
-
+        
+        $conditionString =  substr($conditionString, 3, strlen($conditionString));//remove starting AND
+        $taskListingObj->setCondition($conditionString);
         $totalCount = $taskListingObj->count();
         $taskListingData = $taskListingObj->load();
         
@@ -198,7 +176,6 @@ class TasksController extends FrontendController {
             $tasksObj->setId($id[$i]);
             $tasksObj->delete();
         }
-        
         return $this->json(array('success' => 'true'));
     }
 

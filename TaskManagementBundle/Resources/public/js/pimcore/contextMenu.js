@@ -26,8 +26,8 @@ pimcore.plugin.contextMenu = Class.create({
                                         method: 'GET',  
                                         success: function(response, opts) {
                                             var obj = Ext.decode(response.responseText);
-                                            if(obj['success'][0]) {
-                                                var taskDetail = obj['success'][0];
+                                            if(obj['data'][0]) {
+                                                var taskDetail = obj['data'][0];
                                                 editTaskFormFn(taskDetail);
                                             }
                                         },
@@ -70,8 +70,10 @@ pimcore.plugin.contextMenu = Class.create({
                                         method: 'GET',  
                                         success: function(response, opts) {
                                             var obj = Ext.decode(response.responseText);
-                                            if(obj['success'][0]) {
-                                                var taskDetail = obj['success'][0];
+                                            console.log(obj);
+                                            
+                                            if(obj['data'][0]) {
+                                                var taskDetail = obj['data'][0];
                                                 detail(taskDetail);
                                             }
                                         },
