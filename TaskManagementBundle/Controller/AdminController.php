@@ -68,7 +68,7 @@ class AdminController extends FrontendController
         $tasksObj->setUserOwner($userId);
         $tasksObj->save();
     
-        return $this->json(array('success' => 'TaskAdded'));
+        return $this->json(array('success' => 'true'));
     }
     
     /**
@@ -170,7 +170,7 @@ class AdminController extends FrontendController
      * @return JsonResponse
      * 
     */
-    public function currentTaskDetail(Request $request) {
+    public function viewTask(Request $request) {
         $id = $request->get('id');
         $taskListingObj = new Model\Tasks\Listing();
         $taskListingObj->setCondition("id = ?", $id)->setLimit(1);
@@ -225,7 +225,7 @@ class AdminController extends FrontendController
         $tasksObj->setUserOwner($userId);
         $tasksObj->save();
     
-        return $this->json(array('success' => 'updated'));
+        return $this->json(array('success' => 'true'));
     }
     
     
@@ -248,7 +248,7 @@ class AdminController extends FrontendController
             $tasksObj->delete();
         }
         
-        return $this->json(array('success' => 'deleted'));
+        return $this->json(array('success' => 'true'));
     }
     
     /**
@@ -257,7 +257,7 @@ class AdminController extends FrontendController
      * @Route("/completed_task")
      * 
     */
-    public function completedTask(Request $request) {
+    public function updateStatus(Request $request) {
         $id= json_decode($request->get('id'));
         $taskManagmentObj = new Model\Tasks();
         for($i=0; $i<sizeof($id);$i++) {
@@ -265,15 +265,15 @@ class AdminController extends FrontendController
             $taskManagmentObj->setStatus('Completed');
             $taskManagmentObj->save();
         }
-        return $this->json(array('success' => 'Status updated to completed'));
+        return $this->json(array('success' => 'true'));
     }
     
     /**
      * @Route("/task_portlet");
      * @param Request $request
      */
-    public function portletList(Request $request) {
-        $status  = "Completed";
+    public function portletList(Request $request) { 
+       $status  = "Completed";
        $taskListingObj = new Model\Tasks\Listing();
        $taskListingObj->addConditionParam("status != ?",$status, 'AND');
        $taskListingObj->setOrder('DESC');
@@ -290,13 +290,13 @@ class AdminController extends FrontendController
      * @Route("/settings_save");
      * @param Request $request
      */
-    public function settingsSave(Request $request) {
+    public function saveConfiguration(Request $request) {
         $data = $request->get("data");
             $data =   str_replace("&","
          ",$data);
-        $path = TASK_SETTING_YML_FILE_PATH;
+        $path = '../Resources/config/taskManagement.yml';
         File::put($path, $data);
          
-        return $this->json(array('success' => 'Settings Saved'));
+        return $this->json(array('success' => 'true'));
     }
 }
