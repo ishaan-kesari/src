@@ -22,3 +22,8 @@ services:
 #            - "@service_id"
 #            - "plain_value"
 #            - "%parameter%"
+    TaskManagementBundle\Service\Helper:
+        # templating helpers need to be public as they
+        # are fetched from the container on demand
+        public: true       
+

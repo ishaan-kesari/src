@@ -96,6 +96,7 @@ class TasksController extends FrontendController {
      * @return JsonResponse
      */
     public function listing(Request $request) {
+        $service = \Pimcore::getContainer()->get(\TaskManagementBundle\Service\Helper::class);
         $start = $request->get('start');
         $limit = $request->get('limit');
 
@@ -115,7 +116,7 @@ class TasksController extends FrontendController {
             $flag = true;
         }
         if ($fromDate != "") {
-            $fromDate = $this->parseDateTime($fromDate);
+            $fromDate = $service->parseDateTime($fromDate);
             if ($flag == true) {
                 $taskListingObj->addConditionParam('startDate <= ?', $fromDate, 'AND');
             } else {
@@ -125,7 +126,7 @@ class TasksController extends FrontendController {
         }
         
         if ($toDate != "") {
-            $toDate = $this->parseDateTime($toDate);
+            $toDate = $service->parseDateTime($toDate);
             if ($flag == true) {
                 $taskListingObj->addConditionParam('dueDate > ?', $toDate, 'AND');
             } else {
@@ -154,37 +155,12 @@ class TasksController extends FrontendController {
 
         $totalCount = $taskListingObj->count();
         $taskListingData = $taskListingObj->load();
-        $listingData = $this->dataInArray($taskListingData);
-       return $this->json(array('success' => 'true','data' => $listingData,'total' => $totalCount));
+        
+        $listingData = $service->dataInArray($taskListingData);
+        return $this->json(array('success' => 'true','data' => $listingData,'total' => $totalCount));
 
     }
-    
-    private function dataInArray ($taskListingData){
-        $listingData = [];
-        foreach($taskListingData as $key =>$task ){
-            $listingData[$key]['id'] = $task->id;
-            $listingData[$key]['description'] = $task->description;
-            $listingData[$key]['dueDate'] = $task->dueDate;
-            $listingData[$key]['priority'] = $task->priority;
-            $listingData[$key]['status'] = $task->status;
-            $listingData[$key]['startDate'] = $task->startDate;
-            $listingData[$key]['completionDate'] = $task->completionDate;
-            $listingData[$key]['associatedElement'] = $task->associatedElement;
-            $listingData[$key]['subject'] = $task->subject;
-            $listingData[$key]['userOwner'] = $task->userOwner;
-        }
-        return $listingData;
-    }
-    /**
-     * @param string|null $date
-     * @param string|null $time
-     *
-     * @return \DateTime|null
-     */
-    private function parseDateTime($date = null) {
-        $dateTime = date('Y-m-d', strtotime($date));
-        return $dateTime;
-    }
+     
 
     /**
      * Task Detail for specific id
@@ -200,7 +176,8 @@ class TasksController extends FrontendController {
         $taskListingObj = new Model\Tasks\Listing();
         $taskListingObj->setCondition("id = ?", $id)->setLimit(1);
         $taskDetail = $taskListingObj->load();
-        $listingData = $this->dataInArray($taskDetail);
+        $service = \Pimcore::getContainer()->get(\TaskManagementBundle\Service\Helper::class);
+        $listingData = $service->dataInArray($taskDetail);
         return $this->json(array('data' => $listingData));
     }
 
@@ -253,7 +230,8 @@ class TasksController extends FrontendController {
        $taskListingObj->setOrder('DESC');
        $taskListingObj->setLimit(10);
        $taskListingData = $taskListingObj->load(); 
-       $listingData = $this->dataInArray($taskListingData);
+       $service = \Pimcore::getContainer()->get(\TaskManagementBundle\Service\Helper::class);
+       $listingData = $service->dataInArray($taskListingData);
        return $this->json(array('data'=>$listingData));
     }
 
